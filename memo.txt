@@ -1,0 +1,15 @@
+１．Windows
+SDイメージをダウンロード
+https://qengineering.eu/install-opencv-4.5-on-jetson-nano.html
+
+balenaEcherでSDに書き込み
+
+２．JetSON
+
+キーボード設定
+
+GPartedで未使用領域のマウント
+
+アクセス権限変更
+
+「コマンドで[sudo nautilus]と入力し、rootで状態でHDDのrootを変更し、キー[Ctrl+C]でnautilusを抜け、コマンドを終了させて、再起動させる」
