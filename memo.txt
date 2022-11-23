@@ -5,8 +5,11 @@ https://qengineering.eu/install-opencv-4.5-on-jetson-nano.html
 balenaEcherでSDに書き込み
 
 ２．JetSON
+ネットワーク設定
+システム→Network
 
 キーボード設定
+システム→Language Support→Japanese追加
 
 GPartedで未使用領域のマウント
 
