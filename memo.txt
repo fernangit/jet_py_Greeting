@@ -10,9 +10,15 @@ balenaEcherでSDに書き込み
 
 キーボード設定
 システム→Language Support→Japanese追加
+右上のキーボード設定で日本語キーボートを指定、再起動
 
 GPartedで未使用領域のマウント
 
 アクセス権限変更
-
 「コマンドで[sudo nautilus]と入力し、rootで状態でHDDのrootを変更し、キー[Ctrl+C]でnautilusを抜け、コマンドを終了させて、再起動させる」
+
+サウンド変更
+システム→サウンド→HDMI
+
+リポジトリ取得
+https://github.com/fernangit/jet_py_Greeting.git
