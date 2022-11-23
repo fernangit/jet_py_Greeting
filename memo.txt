@@ -17,8 +17,22 @@ GPartedで未使用領域のマウント
 アクセス権限変更
 「コマンドで[sudo nautilus]と入力し、rootで状態でHDDのrootを変更し、キー[Ctrl+C]でnautilusを抜け、コマンドを終了させて、再起動させる」
 
+ダウンロード先変更
+
+
 サウンド変更
 システム→サウンド→HDMI
 
-リポジトリ取得
+OpenJtalkインストール
+https://qiita.com/kkoba84/items/b828229c374a249965a9
+
+OpenPoseリポジトリ取得
+https://www.learning-nao.com/?p=2821
+https://miyashinblog.com/openpose/
+
+Greetingリポジトリ取得
 https://github.com/fernangit/jet_py_Greeting.git
+
+git push アクセストークン作成
+https://qiita.com/mokio/items/f6c67c8f9af050383fc0
+
