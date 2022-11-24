@@ -35,3 +35,10 @@ https://github.com/fernangit/jet_py_Greeting.git
 git push アクセストークン作成
 https://qiita.com/mokio/items/f6c67c8f9af050383fc0
 
+facenetインストール
+最新はインストールエラーなので、1.0.0を使用
+https://pypi.org/project/facenet-pytorch/1.0.0/
+https://hituji-ws.com/code/python/face_reco/
+https://circleken.net/2020/11/post36/
+
+
