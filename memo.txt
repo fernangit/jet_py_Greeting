@@ -12,7 +12,7 @@ balenaEcherでSDに書き込み
 システム→Language Support→Japanese追加
 右上のキーボード設定で日本語キーボートを指定、再起動
 
-GPartedで未使用領域のマウント
+GPartedで未使用領域をリサイズして結合
 
 アクセス権限変更
 「コマンドで[sudo nautilus]と入力し、rootで状態でHDDのrootを変更し、キー[Ctrl+C]でnautilusを抜け、コマンドを終了させて、再起動させる」
@@ -34,6 +34,7 @@ https://github.com/fernangit/jet_py_Greeting.git
 
 git push アクセストークン作成
 https://qiita.com/mokio/items/f6c67c8f9af050383fc0
+※リポジトリにトークンを記載したテキストを置くとトークン削除されるので注意
 
 facenetインストール
 最新はインストールエラーなので、1.0.0を使用
@@ -42,3 +43,16 @@ https://hituji-ws.com/code/python/face_reco/
 https://circleken.net/2020/11/post36/
 
 
+顔を検出して切り取る GPU使用
+https://circleken.net/2020/09/post21/
+mtcnn = MTCNN(device='cuda:0')
+
+GPUの確認
+import torch
+array = torch.zeros(4) #長さ4の配列を定義（これはcpu配列です）
+print(array)
+#結果は tensor([0., 0., 0., 0.]) と表示されるはず
+
+array_gpu = array.cuda()
+print(array_gpu)
+#結果は tensor([0., 0., 0., 0.], device='cuda:0') と表示されるはず
