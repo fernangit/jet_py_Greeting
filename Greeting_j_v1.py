@@ -4,6 +4,7 @@ import signal
 from datetime import datetime
 import time
 import random
+import copy
 
 import cv2 as cv
 from PIL import Image
@@ -14,6 +15,9 @@ import utterance
 import posedetect
 import cv2pil
 import facenet
+import transfer
+
+motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z']
 
 def greeting():
     #カメラの設定　デバイスIDは0
@@ -36,6 +40,8 @@ def greeting():
             cv.waitKey()
             break
 
+        #元画像を保存
+        orgframe = copy.copy(frame)
         #OpenPose呼び出し
         points = posedetect.getpoints('gpu', hasFrame, frame)
 
@@ -48,25 +54,30 @@ def greeting():
         #有効ポイント10以上かつ前回から5秒以上経過していたら挨拶
         if ((len(v_points) > 10) and ((time.time() - t_st) > 5)):
             #OpenCV→Pill変換
-            pill = cv2pil.cv2pil(frame)
+            pill = cv2pil.cv2pil(orgframe)
             print("detect face")
             #顔検出
-            face = facenet.detect_face(pill, 'out.jpg')
+            face = facenet.detect_face(pill, path='out.jpg')
+#            face = facenet.detect_face(pill)
             print(face)
             #顔が見つかれば認証
             detectname = ''
             if (face != None):
                 #similarity
-        #        detectname = facenet.compare_similarity(Image.open('out.jpg'), 'facedb2') 
-                detectname = facenet.compare_similarity(pill, 'facedb') 
+                detectname = facenet.compare_similarity(face, 'facedb') 
+#                detectname = facenet.compare_similarity(face, 'facedb2') 
                 print('you are ', detectname)
             #認証した？
             if(detectname != ''):
+                #さん付け
+                detectname = detectname + 'さん'
                 #認証挨拶モーション再生
-                print('play motion')
+                print('play special motion')
+                pyautogui.hotkey('2')
             else:
                 #通常挨拶モーション再生
-                print('play motion')
+                print('play normal motion')
+                pyautogui.hotkey('1')
 
             #現在時刻読み取り
             d = datetime.now()
@@ -94,7 +105,18 @@ def greeting():
                     #モーション再生
                     print('play motion')
                     #独り言再生
-                    jtalk.jtalk(utterance.mono_lst[random.randint(0, len(utterance.mono_lst) - 1)])
+                    monologue = random.randint(0, len(utterance.mono_lst) - 1)
+                    jtalk.jtalk(utterance.mono_lst[monologue])
+                    print(monologue, utterance.mono_lst[monologue])
+                    #モーションズレ補正
+                    time.sleep(0.5)
+                    if monologue < len(motionlist) :
+                        #モーション
+                        pyautogui.hotkey(motionlist[monologue])
+                    else:
+                        #口パク
+                        transfer.transferUtterance(utterance.mono_lst[monologue])
+
                     time.sleep(3)
 
                     nxt_h = d.hour + 1

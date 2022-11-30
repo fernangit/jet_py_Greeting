@@ -11,7 +11,7 @@ import time
 #### MTCNN ResNet のモデル読み込み
 start = time.perf_counter()
 #顔を検出して切り取る GPU使用
-mtcnn = MTCNN(device='cuda:0')
+mtcnn = MTCNN(device='cuda:0', margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
 start = time.perf_counter()
@@ -19,7 +19,7 @@ resnet = InceptionResnetV1(pretrained='vggface2').eval()
 print('モデル読み込み', time.perf_counter() - start)
 
 ### 顔検出
-def detect_face(img, path):
+def detect_face(img, path=''):
     if path == '':
         return mtcnn(img)
     else:
@@ -42,8 +42,9 @@ def save_feature_vector(inp, outp):
         np.save(vector, fv.astype('float32'))
 
 #### 画像ファイルから画像の特徴ベクトルを取得(ndarray 512次元)
-def feature_vector(img):
-    img_cropped = mtcnn(img)
+### img_croppedはmtcnnで抽出したもの
+def feature_vector(img_cropped):
+#    img_cropped = mtcnn(img)
     feature_vector = resnet(img_cropped.unsqueeze(0))
     feature_vector_np = feature_vector.squeeze().to('cpu').detach().numpy().copy()
     return feature_vector_np
@@ -54,10 +55,11 @@ def cosine_similarity(a, b):
 
 #### 2枚の画像間の類似度を取得
 ### img = Image.open(image)
-def similarity(img1, img2):
+### imgはmtcnnで抽出したもの
+def similarity(img_cropped1, img_cropped2):
     #特徴ベクトル算出
-    img1_fv = feature_vector(img1)
-    img2_fv = feature_vector(img2)
+    img1_fv = feature_vector(img_cropped1)
+    img2_fv = feature_vector(img_cropped2)
     #コサイン類似度を算出
     sim = cosine_similarity(img1_fv, img2_fv)
     print(sim)
@@ -65,10 +67,11 @@ def similarity(img1, img2):
 
 #### フォルダ内の画像との類似度を比較
 ### img = Image.open(image)
-def compare_similarity(img, path):
+### imgはmtcnnで抽出したもの
+def compare_similarity(img_cropped, path):
     #特徴ベクトル算出
     start = time.perf_counter()
-    in_fv = feature_vector(img)
+    in_fv = feature_vector(img_cropped)
     print('特徴ベクトル算出', time.perf_counter() - start)
     maxsim = 0.0
     detect = ''

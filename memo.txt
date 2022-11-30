@@ -56,3 +56,7 @@ print(array)
 array_gpu = array.cuda()
 print(array_gpu)
 #結果は tensor([0., 0., 0., 0.], device='cuda:0') と表示されるはず
+
+サウンド出力をHDMIに固定する
+https://qastack.jp/ubuntu/1038490/how-do-you-set-a-default-audio-output-device-in-ubuntu-18-04
+
