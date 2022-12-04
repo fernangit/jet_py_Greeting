@@ -17,7 +17,7 @@ import cv2pil
 import facenet
 import transfer
 
-motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z']
+motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', 'w', 'y', 'z']
 
 def greeting():
     #カメラの設定　デバイスIDは0

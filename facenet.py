@@ -91,7 +91,7 @@ def compare_similarity(img_cropped, path):
 #        print(sim)
         if sim > maxsim:
             maxsim = sim
-            detect = basename
+            detect = basename[:s.find('_')]  # スライスで'_'よりも前を抽出
     print('フォルダ内のファイルを検索', time.perf_counter() - start)
 
     #類似度が所定値以下なら認証不可
