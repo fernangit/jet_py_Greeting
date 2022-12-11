@@ -2,7 +2,7 @@
 import sys
 import torch
 from facenet_pytorch import MTCNN, InceptionResnetV1
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 import glob
 import os
@@ -17,6 +17,14 @@ print('MTCNN読み込み', time.perf_counter() - start)
 start = time.perf_counter()
 resnet = InceptionResnetV1(pretrained='vggface2').eval()
 print('モデル読み込み', time.perf_counter() - start)
+
+### 顔切り出し
+### imgはpill形式
+#def crop_face(img):
+#    batch_boxes, batch_probs, batch_points = mtcnn.detect(img, landmarks=True)
+#    batch_boxes, batch_probs, batch_points = mtcnn.select_boxes(batch_boxes, batch_probs, batch_points, img, method=mtcnn.selection_method)
+#    faces = mtcnn.extract(img, batch_boxes, None)
+#    return faces, batch_boxes, batch_probs, batch_points
 
 ### 顔検出
 def detect_face(img, path=''):
@@ -36,7 +44,12 @@ def save_feature_vector(inp, outp):
         basename = os.path.splitext(os.path.basename(jpg))[0]
         print(basename)
         # ベクトル化
-        fv = feature_vector(Image.open(jpg))
+#        fv = feature_vector(Image.open(jpg))
+        try:
+            fv = feature_vector(mtcnn(Image.open(jpg)))
+        except:
+            print('feature_vector error')
+            continue
         # numpy形式でベクトル保存
         vector = outp + '/' + basename
         np.save(vector, fv.astype('float32'))
@@ -91,7 +104,7 @@ def compare_similarity(img_cropped, path):
 #        print(sim)
         if sim > maxsim:
             maxsim = sim
-            detect = basename[:s.find('_')]  # スライスで'_'よりも前を抽出
+            detect = basename
     print('フォルダ内のファイルを検索', time.perf_counter() - start)
 
     #類似度が所定値以下なら認証不可
@@ -100,6 +113,15 @@ def compare_similarity(img_cropped, path):
         detect = ''
 
     return detect
+
+def draw_boxes(img, boxes, probs, landmarks):
+    img_draw = img.copy()
+    draw = ImageDraw.Draw(img_draw)
+    for i, (box, landmark) in enumerate(zip(boxes, landmarks)):
+        draw.rectangle(box.tolist(), width=5)
+        for p in landmark:
+            draw.rectangle((p - 10).tolist() + (p + 10).tolist, width=10)
+    return img_draw
 
 if __name__ == '__main__':
     args = sys.argv
