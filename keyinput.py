@@ -1,11 +1,14 @@
 from pynput import keyboard
+import time
 
 class MonKeyBoard:
-    inputkey = ''
+    def __init__(self):
+        self.inputkey = '???'
     def on_press(self,key):
         try:
             print('press: {}'.format(key.char))
-            inputkey = key.char
+            print('key.char', key.char)
+            self.inputkey = key.char
             self.listener.stop()
             self.listener = None
         except AttributeError:
@@ -13,10 +16,10 @@ class MonKeyBoard:
     
     def on_release(self,key):
         print('release: {}'.format(key))
-        if( key == keyboard.Key.esc):
-            print("StopKey")
-            self.listener.stop()
-            self.listener = None
+        print('key', key)
+        self.inputkey = key
+        self.listener.stop()
+        self.listener = None
             
     def start(self):
         self.listener = keyboard.Listener(on_press=self.on_press,on_release=self.on_release)
@@ -24,16 +27,30 @@ class MonKeyBoard:
         
     def getstatus(self):
         if(self.listener == None):
-            return False       
-        return True
+            print('inputkey:', self.inputkey)
+            return False, self.inputkey
+        return True, self.inputkey
         
 def keyin():
     monitor = MonKeyBoard()
     monitor.start()
     while(True):
-        status = monitor.getstatus()
-        #print(str(status))
+        status, inputkey = monitor.getstatus()
         if(status == False):
             print("break")
             break
-    return monitor.inputkey
+
+    return inputkey
+
+def keythrough(wait):
+    monitor = MonKeyBoard()
+    monitor.start()
+    time.sleep(wait)
+    status, inputkey = monitor.getstatus()
+
+    return inputkey
+
+if __name__ == '__main__':
+#    ret = keyin()
+    ret = keythrough(1)
+    print('keyin:', ret)

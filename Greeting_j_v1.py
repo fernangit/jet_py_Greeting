@@ -17,7 +17,7 @@ import cv2pil
 import facenet
 import transfer
 
-motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z']
+motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y']
 
 def greeting():
     #カメラの設定　デバイスIDは0
@@ -73,11 +73,11 @@ def greeting():
                 detectname = detectname + 'さん'
                 #認証挨拶モーション再生
                 print('play special motion')
-                pyautogui.hotkey('2')
+                pyautogui.hotkey('c')
             else:
                 #通常挨拶モーション再生
                 print('play normal motion')
-                pyautogui.hotkey('1')
+                pyautogui.hotkey('b')
 
             #現在時刻読み取り
             d = datetime.now()
