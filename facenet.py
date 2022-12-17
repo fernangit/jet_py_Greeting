@@ -15,6 +15,7 @@ mtcnn = MTCNN(device='cuda:0', margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
 start = time.perf_counter()
+#resnet = InceptionResnetV1(pretrained='vggface2', device='cuda:0').eval()
 resnet = InceptionResnetV1(pretrained='vggface2').eval()
 print('モデル読み込み', time.perf_counter() - start)
 
@@ -36,13 +37,12 @@ def detect_face(img, path=''):
 ### ベクトルの保存
 def save_feature_vector(inp, outp):
     # フォルダ内のファイルを検索
-    print(inp + '/' + '*.jpg')
+#    print(inp + '/' + '*.jpg')
     jpg_files = glob.glob(inp + '/' + '*.jpg')
     for jpg in jpg_files:
-        print(jpg)
         # ファイル名取得
         basename = os.path.splitext(os.path.basename(jpg))[0]
-        print(basename)
+#        print(basename)
         # ベクトル化
 #        fv = feature_vector(Image.open(jpg))
         try:
@@ -57,7 +57,6 @@ def save_feature_vector(inp, outp):
 #### 画像ファイルから画像の特徴ベクトルを取得(ndarray 512次元)
 ### img_croppedはmtcnnで抽出したもの
 def feature_vector(img_cropped):
-#    img_cropped = mtcnn(img)
     feature_vector = resnet(img_cropped.unsqueeze(0))
     feature_vector_np = feature_vector.squeeze().to('cpu').detach().numpy().copy()
     return feature_vector_np
@@ -75,7 +74,7 @@ def similarity(img_cropped1, img_cropped2):
     img2_fv = feature_vector(img_cropped2)
     #コサイン類似度を算出
     sim = cosine_similarity(img1_fv, img2_fv)
-    print(sim)
+#    print(sim)
     return sim
 
 #### フォルダ内の画像との類似度を比較
@@ -112,7 +111,7 @@ def compare_similarity(img_cropped, path):
     if maxsim <= 0.7:
         detect = ''
 
-    return detect
+    return maxsim, detect, in_fv
 
 def draw_boxes(img, boxes, probs, landmarks):
     img_draw = img.copy()

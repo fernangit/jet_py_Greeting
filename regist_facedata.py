@@ -1,3 +1,4 @@
+import os
 import sys
 import cv2
 from PIL import Image, ImageDraw
@@ -8,32 +9,39 @@ import cv2pil
 import facenet
 import keyinput
 
+class featureRegister:
+    #初期化
+    mode = 0
+    skip = False
+    count = 0
+    registnum = 0
+
 #カメラの設定　デバイスIDは0
 cap = cv2.VideoCapture(0)
 
 def save_faceFeature(dbpath, name):
-    #初期化
-    mode = 0
-    skip = True
+    fr = featureRegister()
     keywait = True
-    count = 0
 
     #名前の重複チェック
-    check_name(dbpath, name, count)
-    print('count:', count)
+    fr.count = check_name(dbpath, name)
+    print('count:', fr.count)
 
-    print('データ登録開始　Yes:y')
+    print('データ登録を開始しますか？　Yes:y')
     #ビデオ入力開始
     while(True):
         ret, face = img_crop(cap, keywait)
         key = cv2.waitKey(1)
         #キー入力が取れないので代用
         key = keyinput.keythrough(1)
-        print('key:', key)
+#        print('key:', key)
         #ord：文字を10進数で表記されるアスキーコードへ変換する
         if keywait == True and key == 'y':
             print('顔データ登録開始')
             keywait = False
+        elif key == 'n':
+            print('顔データ登録終了')
+            break
 
         #顔データ登録開始
         if keywait == False:
@@ -42,71 +50,79 @@ def save_faceFeature(dbpath, name):
                 continue
 
             #マスクなしモード設定
-            if mode == 0:
-                mode = 1
-                registnum = 0
+            if fr.mode == 0:
+                fr.mode = 1
 
             #データ登録
-            if mode == 1 or mode == 2:
-                regist_faceFeature(face, dbpath, name, skip, mode, count, registnum)
+            if fr.mode == 1 or fr.mode == 2:
+                regist_faceFeature(face, dbpath, name, fr)
 
             #データチェック
-            if mode == 3:
-                check_faceFeature(face, dbpath, name)
+            if fr.mode == 3:
+                check_faceFeature(face, dbpath, name, fr)
 
-            if skip == True or mode == 3:
+            if fr.skip == True or fr.mode == 3:
                 print('登録終了しますか？　Yes:y No:n')
                 if keyinput.keyin() == 'y':
                     print('登録終了')
                     break
                 else:
-                    print('再登録')
-                    mode = 0
-                    skip = True
+                    print('データ登録を開始しますか？ Yes:y')
+                    fr.mode = 0
+                    fr.skip = False
+                    fr.count = 0
+                    fr.registnum = 0
                     keywait = True
 
-def regist_faceFeature(face, dbpath, name, skip, mode, count, registnum):
-    if mode == 1:
-        print('マスクなしモードを設定するか Yes:y Skip:s', registnum + 1)
-    elif mode == 2:
-        print('マスクありモードを設定するか Yes:y Skip:s', registnum + 1)
+def regist_faceFeature(face, dbpath, name, fr):
+    if fr.mode == 1:
+        print('マスクなしモードを設定しますか？ Yes:y Skip:s', fr.registnum + 1)
+    elif fr.mode == 2:
+        print('マスクありモードを設定しますか？ Yes:y Skip:s', fr.registnum + 1)
     else:
         return
 
-    regist_skip(skip, mode)
-    print(skip, mode)
-    if skip == False:
+    regist_skip(fr)
+    print(fr.skip, fr.mode)
+    if fr.skip == False:
         #データ登録
         print('データ登録')
-        regist_dbx3(face, dbpath, name, skip, mode, count, registnum)
+        regist_dbx3(face, dbpath, name, fr)
+    else:
+        fr.skip = False
+        fr.mode = fr.mode + 1
 
-def check_faceFeature(face, dbpath, name):
+def check_faceFeature(face, dbpath, name, fr):
     #テスト
-    print('顔認証テストをするか Yes:y Skip:s')
-    regist_skip(skip, mode)
-    if skip == False:
-        detect = facenet.compare_similarity(face, dbpath)
+    print('顔認証テストをしますか？ Yes:y Skip:s')
+    regist_skip(fr)
+    detect = ''
+    if fr.skip == False:
+        maxsim, detect, in_fv = facenet.compare_similarity(face, dbpath)
         if detect == '':
             print('顔認証テスト　NG')
         else:
             print('you are ', detect)
 
-def check_name(dbpath, name, count):
+def check_name(dbpath, name):
     maxnum = 0
+    count = 0
     #dbpathにある同じ名前のファイルを検索
     for file in glob.glob(dbpath + '/' + name + '*.npy'):
         print(file)
-        num = int(file.split('_')[1])
+        fname = os.path.splitext(os.path.basename(file))[0]
+        num = int(fname.split('_')[1])
         print('num:', num)
         #番号の二桁目以上を取得
-        num = num / 10
+        num = int(num / 10)
         #番号の最大値を取得
         if num > maxnum:
             maxnum = num
     print('maxnum:', maxnum)
-    if maxnum != 0:
-        #カウントアップしてcountを返す
-        count = (maxnum + 1) * 10
+    #カウントアップしてcountを返す
+    count = (maxnum + 1) * 10
+
+    return count
 
 def img_crop(cap, keywait):
     #初期化
@@ -137,17 +153,17 @@ def img_crop(cap, keywait):
 
     return ret, face
 
-def regist_dbx3(img_cropped, dbpath, name, skip, mode, count, registnum):
+def regist_dbx3(img_cropped, dbpath, name, fr):
     #データ登録
-    regist_db(img_cropped, dbpath, name + '_' + str(count))
+    regist_db(img_cropped, dbpath, name + '_' + str(fr.count))
     print('データ登録')
-    count = count + 1
-    registnum = registnum + 1
+    fr.count = fr.count + 1
+    fr.registnum = fr.registnum + 1
     #3枚登録
-    if registnum > 3:
-        skip = True
-        mode = mode + 1
-        registnum = 0
+    if fr.registnum >= 3:
+        fr.skip = False
+        fr.mode = fr.mode + 1
+        fr.registnum = 0
 
 def regist_db(img_cropped, dbpath, name):
     #切り出し画像でデータ作成
@@ -156,23 +172,16 @@ def regist_db(img_cropped, dbpath, name):
     vector = dbpath + '/' + name
     np.save(vector, fv.astype('float32'))
 
-def regist_skip(skip, mode):
-    if skip == True:
-        if mode == 1:
-            print('マスクなし画像登録')
-        elif mode == 2:
-            print('マスクあり画像登録')
-        else:
-            print('顔認証テスト')
+def regist_skip(fr):
+    print('Yes:y Skip:s')
 
-        ret = keyinput.keyin()
-        if ret == 's':
-            #スキップする
-            skip = True
-            mode = mode + 1
-        else:
-            #スキップしない
-            skip = False
+    ret = keyinput.keyin()
+    if ret == 's':
+        #スキップする
+        skip = True
+    else:
+        #スキップしない
+        skip = False
 
 if __name__ == '__main__':
     #args[1] = dbpath

@@ -25,9 +25,9 @@ elif MODE is "MPI" :
 inWidth = 368
 inHeight = 368
 threshold = 0.1
+net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
-def getpoints(device, hasFrame, frame):
-    net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
+def set_openpose_device(device):
     if device == "cpu":
         net.setPreferableBackend(cv2.dnn.DNN_TARGET_CPU)
         print("Using CPU device")
@@ -36,6 +36,7 @@ def getpoints(device, hasFrame, frame):
         net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
         print("Using GPU device")
 
+def getpoints(hasFrame, frame):
     # Empty list to store the detected keypoints
     points = []
     t = time.time()
@@ -90,3 +91,36 @@ def getpoints(device, hasFrame, frame):
     cv2.imshow('Output-Skeleton', frame)
 
     return points
+
+def crop_frame(p, frame):
+#    print('p:', p)
+    frame_width = frame.shape[1]
+    frame_height = frame.shape[0]
+    #顔の中心算出
+    fcx = int((p[0][0] + p[1][0]) / 2)
+    fcy = int((p[0][1] + p[1][1]) / 2)
+#    print('fcx:', fcx, 'fcy:', fcy)
+    #顔のサイズ算出
+    fwid = abs(p[0][0] - p[1][0])
+    fhig = abs(p[0][1] - p[1][1])
+#    print('fwid:', fwid, 'fhig:', fhig)
+    #[縦上:縦下, 横左:横右]
+    sy = fcy - fhig
+    if sy < 0:
+        sy = 0
+    ey = fcy + fhig
+    if ey > frame_height:
+        ey = frame_height
+    sx = fcx - fhig
+    if sx < 0:
+        sx = 0
+    ex = fcx + fhig
+    if ex > frame_width:
+        ex = frame_width
+#    print('sx:', sx, 'sy:', sy, 'ex:', ex, 'ey:', ey)
+    #画像切り出し
+    cropped_frame = frame[sy : ey, sx : ex]
+    cv2.imwrite('cropped_frame.jpg', cropped_frame)
+
+    return cropped_frame
+
