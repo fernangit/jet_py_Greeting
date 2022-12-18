@@ -1,7 +1,7 @@
 import random
 import pyautogui
 
-motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', 'w', '4']
+motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', '4', 'w']
 dance_list = ['2', '3', '5', '6', '7', '8', '9']
 
 #起動時モーション
