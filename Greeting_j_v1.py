@@ -19,6 +19,7 @@ import facenet
 import transfer
 import motion
 import talk
+import regist_detected
 
 def greeting():
     #サーバ起動済み＆WebGL起動済みであること
@@ -112,6 +113,8 @@ def greeting():
                 #認証した？
                 if(detect_name != ''):
 #                    print("認証した")
+                    # 登録
+                    regist_detected.regist_detected(detect_name)
                     #今回データで差し替え
 #                    vector = 'facedb' + '/' + detect_name
                     vector = 'facedb2' + '/' + detect_name
@@ -123,16 +126,22 @@ def greeting():
 
                 print('you are ', detect_name)
 
-            #挨拶モーション再生
-#            print('挨拶モーション再生')
+
+            #認識度レベル変換
             level = transfer.transfer_percentage(max_sim, 0.7, motion.get_motion_num())
-            motion.set_level_motion(level)
+            if level > len(utterance.op_lst) - 1:
+                level = len(utterance.op_lst) - 1
 
             #挨拶音声再生
 #            print('挨拶音声再生')
-            if level > len(utterance.op_lst) - 1:
-                level = len(utterance.op_lst) - 1
             talk.greeting(d, detect_name, utterance.op_lst[level])
+
+            #モーションズレ補正
+            time.sleep(0.5)
+
+            #挨拶モーション再生
+#            print('挨拶モーション再生')
+            motion.set_level_motion(level)
 
             t_st = time.time()
 #            print('t_st:', t_st)
