@@ -8,15 +8,20 @@ import glob
 import os
 import time
 
+#### GPUチェック
+device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+print('Using device:', device)
+
 #### MTCNN ResNet のモデル読み込み
 start = time.perf_counter()
 #顔を検出して切り取る GPU使用
-mtcnn = MTCNN(device='cuda:0', margin=10)
+mtcnn = MTCNN(device=device, margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
 start = time.perf_counter()
-#resnet = InceptionResnetV1(pretrained='vggface2', device='cuda:0').eval()
-resnet = InceptionResnetV1(pretrained='vggface2').eval()
+resnet = InceptionResnetV1(pretrained='vggface2').to(device).eval()
+#resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
+#resnet = InceptionResnetV1(pretrained='vggface2').eval()
 print('モデル読み込み', time.perf_counter() - start)
 
 ### 顔切り出し
@@ -57,7 +62,8 @@ def save_feature_vector(inp, outp):
 #### 画像ファイルから画像の特徴ベクトルを取得(ndarray 512次元)
 ### img_croppedはmtcnnで抽出したもの
 def feature_vector(img_cropped):
-    feature_vector = resnet(img_cropped.unsqueeze(0))
+    feature_vector = resnet(img_cropped.unsqueeze(0).to(device))
+#    feature_vector = resnet(img_cropped.unsqueeze(0))
     feature_vector_np = feature_vector.squeeze().to('cpu').detach().numpy().copy()
     return feature_vector_np
 

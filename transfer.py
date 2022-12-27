@@ -7,7 +7,7 @@ i = 'いきしちにひみりぎじぢびぴぃイキシチニヒミリギジヂ
 u = 'うくすつぬふむゆるぐずづぷぶぅゅっウクスツヌフムユルグズヅブプゥュッｳｸｽﾂﾇﾌﾑﾕﾙｸﾞｽﾞﾂﾞﾌﾞﾌﾟｩｭｯ'
 e = 'えけせてねへめれげぜでべぺぇエケセテネヘメレゲゼデベペェｴｹｾﾃﾈﾍﾒﾚｹﾞｾﾞﾃﾞﾍﾞﾍﾟｪ'
 o = 'おこそとのほもよろごぞどぽぼぉょオコソトノホモヨロゴゾドボポォョｵｺｿﾄﾉﾎﾓﾖﾛｺﾞｿﾞﾄﾞﾎﾞﾎﾟｫｮ'
-n = 'んン'
+n = 'んンﾝ'
 
 def transfer_utterance(utterance):
     list(utterance)
@@ -52,12 +52,18 @@ def transfer_percentage(per, thresh, motion_num):
     if base <= 0:
         #0以下(類似度がthreshより小)
         level = 0
-    elif base <= 10:
-        #10以下(71%〜80％)
+    elif base <= 5:
+        #5以下(71%〜75％)
         level = 1
+    elif base <= 10:
+        #10以下(76%〜80％)
+        level = 2
+    elif base <= 15:
+        #15以下(81%〜85％)
+        level = 3
     else:
-        #10より大(81%〜100%)
-        level = base - 10
+        #15より大(86%〜100%)
+        level = base - 12
         #高レベルの補正
         if level > motion_num - 1:
             level = motion_num - 1

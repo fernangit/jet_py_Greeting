@@ -88,7 +88,11 @@ def getpoints(hasFrame, frame):
     cv2.putText(frame, "time taken = {:.2f} sec".format(time.time() - t), (50, 50), cv2.FONT_HERSHEY_COMPLEX, .8, (255, 50, 0), 2, lineType=cv2.LINE_AA)
     # cv2.putText(frame, "OpenPose using OpenCV", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 50, 0), 2, lineType=cv2.LINE_AA)
     # cv2.imshow('Output-Keypoints', frameCopy)
-    cv2.imshow('Output-Skeleton', frame)
+    #debug
+    cv2.namedWindow("Output-Skeleton", cv2.WINDOW_NORMAL)
+    resized_frame = cv2.resize(frame, ((int)(frame.shape[1]/4), (int)(frame.shape[0]/4)))
+    cv2.imshow('Output-Skeleton', resized_frame)
+    cv2.moveWindow('window name', 100, 100)
 
     return points
 
@@ -120,7 +124,8 @@ def crop_frame(p, frame):
 #    print('sx:', sx, 'sy:', sy, 'ex:', ex, 'ey:', ey)
     #画像切り出し
     cropped_frame = frame[sy : ey, sx : ex]
-    cv2.imwrite('cropped_frame.jpg', cropped_frame)
+    #debug
+#    cv2.imwrite('cropped_frame.jpg', cropped_frame)
 
     return cropped_frame
 

@@ -1,7 +1,7 @@
 import random
 import pyautogui
 
-motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', '4', 'w']
+motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', '4']
 dance_list = ['2', '3', '5', '6', '7', '8', '9']
 
 #起動時モーション
@@ -25,6 +25,8 @@ def set_default_motion(now_time):
 #レベル対応モーション呼び出し
 def set_level_motion(level):
     print('level:', level)
+    if level > len(motion_list) - 1:
+        level = len(motion_list) - 1
     pyautogui.hotkey(motion_list[level])
 
 #モーション数
