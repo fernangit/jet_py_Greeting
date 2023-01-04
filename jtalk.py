@@ -1,6 +1,7 @@
 #coding: utf-8
 import subprocess
 from datetime import datetime
+import play
 
 def jtalk(t):
     open_jtalk=['open_jtalk']
@@ -13,8 +14,7 @@ def jtalk(t):
     c.stdin.write(t.encode())
     c.stdin.close()
     c.wait()
-    aplay = ['aplay','-q','open_jtalk.wav']
-    wr = subprocess.Popen(aplay)
+    play.play_sound('open_jtalk.wav')
 
 def say_datetime():
     d = datetime.now()
