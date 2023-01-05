@@ -19,13 +19,9 @@ class featureRegister:
 #カメラの設定　デバイスIDは0
 cap = cv2.VideoCapture(0)
 
-def save_faceFeature(dbpath, name):
+def save_faceFeature(dbpath):
     fr = featureRegister()
     keywait = True
-
-    #名前の重複チェック
-    fr.count = check_name(dbpath, name)
-    print('count:', fr.count)
 
     print('データ登録を開始しますか？　Yes:y')
     #ビデオ入力開始
@@ -42,6 +38,12 @@ def save_faceFeature(dbpath, name):
         elif key == 'n':
             print('顔データ登録終了')
             break
+
+        #名前の入力
+        name = input('名前_Numberを入力してください')
+        #名前の重複チェック
+        fr.count = check_name(dbpath, name)
+        print('count:', fr.count)
 
         #顔データ登録開始
         if keywait == False:
@@ -185,11 +187,10 @@ def regist_skip(fr):
 
 if __name__ == '__main__':
     #args[1] = dbpath
-    #args[2] = name
     args = sys.argv
-    if 2 <= len(args):
-        print(args[1], args[2])
-        save_faceFeature(args[1], args[2])
+    if 1 <= len(args):
+        print(args[1])
+        save_faceFeature(args[1])
     else:
         print('Arguments are too short')
 
