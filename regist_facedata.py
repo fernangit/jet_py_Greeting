@@ -23,6 +23,12 @@ def save_faceFeature(dbpath):
     fr = featureRegister()
     keywait = True
 
+    #名前の入力
+    name = input('名前_Numberを入力してください')
+    #名前の重複チェック
+    fr.count = check_name(dbpath, name)
+    print('count:', fr.count)
+
     print('データ登録を開始しますか？　Yes:y')
     #ビデオ入力開始
     while(True):
@@ -38,12 +44,6 @@ def save_faceFeature(dbpath):
         elif key == 'n':
             print('顔データ登録終了')
             break
-
-        #名前の入力
-        name = input('名前_Numberを入力してください')
-        #名前の重複チェック
-        fr.count = check_name(dbpath, name)
-        print('count:', fr.count)
 
         #顔データ登録開始
         if keywait == False:
@@ -69,6 +69,12 @@ def save_faceFeature(dbpath):
                     print('登録終了')
                     break
                 else:
+        #名前の入力
+                    name = input('名前_Numberを入力してください')
+                    #名前の重複チェック
+                    fr.count = check_name(dbpath, name)
+                    print('count:', fr.count)
+
                     print('データ登録を開始しますか？ Yes:y')
                     fr.mode = 0
                     fr.skip = False
@@ -113,7 +119,7 @@ def check_name(dbpath, name):
     for file in glob.glob(dbpath + '/' + name + '*.npy'):
         print(file)
         fname = os.path.splitext(os.path.basename(file))[0]
-        num = int(fname.split('_')[1])
+        num = int(fname.split('_')[2])
         print('num:', num)
         #番号の二桁目以上を取得
         num = int(num / 10)

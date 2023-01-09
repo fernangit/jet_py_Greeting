@@ -1,3 +1,4 @@
+import sys
 import os
 import time
 import random
@@ -7,13 +8,13 @@ import play
 motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', '4']
 #注：dance_listとsound_listの配列番号は対応させること
 dance_list = ['2', '3', '5', '6', '7', '8', '9']
-sound_list = ['',
+sound_list = ['./source/Gimme×Gimme.wav',
               './source/いーあるふぁんくらぶ.wav',
-              '',
+              './source/ジャンキーナイトタウンオーケストラ.wav',
               './source/アカリがやってきたぞっ.wav',
-              '',
-              '',
-              '']
+              './source/KING.wav',
+              './source/CH4NGE.wav',
+              './source/ロキ.wav']
 
 #起動時モーション
 def set_first_motion():
@@ -50,9 +51,16 @@ def get_motion_num():
     return len(motion_list)
 
 if __name__ == '__main__':
-    if os.path.isfile(sound_list[1]) == True:
-        play.play_sound(sound_list[1])
-        #モーションズレ補正
-        time.sleep(0.5)
-    pyautogui.hotkey(dance_list[1])
+    #args[1] = dbpath
+    args = sys.argv
+    if 1 <= len(args):
+        print(args[1])
+        time.sleep(1)
+        if os.path.isfile(sound_list[int(args[1])]) == True:
+            play.play_sound(sound_list[int(args[1])])
+            #モーションズレ補正
+            time.sleep(0.5)
+        pyautogui.hotkey(dance_list[int(args[1])])
+    else:
+        print('Arguments are too short')
 
