@@ -9,13 +9,13 @@ parser.add_argument("--video_file", default="sample_video.mp4", help="Input Vide
 
 MODE = "MPI"
 
-if MODE is "COCO":
+if MODE == "COCO":
     protoFile = "pose/coco/pose_deploy_linevec.prototxt"
     weightsFile = "pose/coco/pose_iter_440000.caffemodel"
     nPoints = 18
     POSE_PAIRS = [ [1,0],[1,2],[1,5],[2,3],[3,4],[5,6],[6,7],[1,8],[8,9],[9,10],[1,11],[11,12],[12,13],[0,14],[0,15],[14,16],[15,17]]
 
-elif MODE is "MPI" :
+elif MODE == "MPI" :
     protoFile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
     weightsFile = "pose/mpi/pose_iter_160000.caffemodel"
     nPoints = 15
