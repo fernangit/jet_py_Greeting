@@ -60,3 +60,10 @@ print(array_gpu)
 サウンド出力をHDMIに固定する
 https://qastack.jp/ubuntu/1038490/how-do-you-set-a-default-audio-output-device-in-ubuntu-18-04
 
+Chroniumブラウザのセキュリティパスワード解除
+パスワードと鍵で検索
+”Login”を右クリックし、”Change Password”を選択
+現在のパスワードを入力
+次に新しいパスワードを求められますが、何も入力せずに”Continue”を選択して下さい。これでChromium起動時のパスワード入力を省略できます
+
+http://skmkuma.com/%E3%80%90docker14%E3%80%91jetson%E3%82%92docker%E3%81%A7%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B/

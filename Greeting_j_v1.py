@@ -13,7 +13,7 @@ import pyautogui
 
 import jtalk
 import utterance
-import posedetect
+import pose_detect
 import cv2pil
 import facenet
 import transfer
@@ -34,7 +34,7 @@ def greeting():
     motion.set_first_motion()
 
     #OpenPose用デバイス設定
-    posedetect.set_openpose_device('gpu')
+    pose_detect.set_openpose_device('gpu')
 
     #現在時刻読み取り
     d = datetime.now()
@@ -73,7 +73,7 @@ def greeting():
 
         #OpenPose呼び出し
 #        print('OpenPose呼び出し')
-        points = posedetect.getpoints(hasFrame, frame)
+        points = pose_detect.getpoints(hasFrame, frame)
 #        print('points=', points)
         #有効Point取り出し
         v_points= [p for p in points if p != None]
@@ -94,7 +94,7 @@ def greeting():
             if points[0] != None and points[1] != None:
                 print("detect face")
                 #顔周辺の画像を切り出す             
-                cropped_frame = posedetect.crop_frame(f_point, org_frame)
+                cropped_frame = pose_detect.crop_frame(f_point, org_frame)
 #                cropped_frame = org_frame
                 #OpenCV→Pill変換
                 pill = cv2pil.cv2pil(cropped_frame)

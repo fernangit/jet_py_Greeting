@@ -42,12 +42,12 @@ def detect_face(img, path=''):
 ### ベクトルの保存
 def save_feature_vector(inp, outp):
     # フォルダ内のファイルを検索
-#    print(inp + '/' + '*.jpg')
+    print(inp + '/' + '*.jpg')
     jpg_files = glob.glob(inp + '/' + '*.jpg')
     for jpg in jpg_files:
         # ファイル名取得
         basename = os.path.splitext(os.path.basename(jpg))[0]
-#        print(basename)
+        print(basename)
         # ベクトル化
 #        fv = feature_vector(Image.open(jpg))
         try:

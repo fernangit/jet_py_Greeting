@@ -23,19 +23,22 @@ def save_faceFeature(dbpath):
     fr = featureRegister()
     keywait = True
 
+    #ダミー
+    img_crop(cap, False)
+
     #名前の入力
-    name = input('名前_Numberを入力してください')
+    name = input('名前_Numberを入力してください：')
     #名前の重複チェック
     fr.count = check_name(dbpath, name)
     print('count:', fr.count)
 
-    print('データ登録を開始しますか？　Yes:y')
+ #   print('データ登録を開始しますか？　Yes:y')
+    key = input('データ登録を開始しますか？　Yes:y：')
     #ビデオ入力開始
     while(True):
         ret, face = img_crop(cap, keywait)
-        key = cv2.waitKey(1)
+        cv2.waitKey(1)
         #キー入力が取れないので代用
-        key = keyinput.keythrough(1)
 #        print('key:', key)
         #ord：文字を10進数で表記されるアスキーコードへ変換する
         if keywait == True and key == 'y':
@@ -58,24 +61,28 @@ def save_faceFeature(dbpath):
             #データ登録
             if fr.mode == 1 or fr.mode == 2:
                 regist_faceFeature(face, dbpath, name, fr)
+                key = input()
 
             #データチェック
             if fr.mode == 3:
                 check_faceFeature(face, dbpath, name, fr)
+                key = input()
 
             if fr.skip == True or fr.mode == 3:
-                print('登録終了しますか？　Yes:y No:n')
-                if keyinput.keyin() == 'y':
+#                print('登録終了しますか？　Yes:y No:n')
+                key = input('登録終了しますか？　Yes:y No:n：')
+                if key == 'y':
                     print('登録終了')
                     break
                 else:
         #名前の入力
-                    name = input('名前_Numberを入力してください')
+                    name = input('名前_Numberを入力してください：')
                     #名前の重複チェック
                     fr.count = check_name(dbpath, name)
                     print('count:', fr.count)
 
-                    print('データ登録を開始しますか？ Yes:y')
+#                    print('データ登録を開始しますか？ Yes:y')
+                    key = input('データ登録を開始しますか？ Yes:y：')
                     fr.mode = 0
                     fr.skip = False
                     fr.count = 0
