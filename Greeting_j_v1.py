@@ -21,7 +21,7 @@ import motion
 import talk
 import regist_detected
 
-def greeting():
+def greeting(mode = 0):
     #サーバ起動済み＆WebGL起動済みであること
 
     #カメラの設定　デバイスIDは0
@@ -45,6 +45,8 @@ def greeting():
 #    while cv.waitKey(1) < 0:
     while True:
         cv.waitKey(1)
+        greeting = False
+        cropped_face = False
         #現在時刻読み取り
 #        print('現在時刻読み取り')
         d = datetime.now()
@@ -70,32 +72,47 @@ def greeting():
 
         #元画像を保存
         org_frame = copy.copy(frame)
+        if (mode == 1):
+            #ポーズ省略の場合
+            cropped_frame = org_frame
+            cropped_face = True
 
-        #OpenPose呼び出し
-#        print('OpenPose呼び出し')
-        points = pose_detect.getpoints(hasFrame, frame)
-#        print('points=', points)
-        #有効Point取り出し
-        v_points= [p for p in points if p != None]
-#        print('v_points=', v_points)
-#        print('len=', len(v_points))
-        #0：頭、1：首
-        #0：頭、1：首を取得しておく
-        f_point = []
-        f_point.append(points[0])
-        f_point.append(points[1])
+        if (mode == 0):
+            #OpenPose呼び出し
+#            print('OpenPose呼び出し')
+            points = pose_detect.getpoints(hasFrame, frame)
+#            print('points=', points)
+            #有効Point取り出し
+            v_points= [p for p in points if p != None]
+#            print('v_points=', v_points)
+#            print('len=', len(v_points))
+            #0：頭、1：首
+            #0：頭、1：首を取得しておく
+            f_point = []
+            f_point.append(points[0])
+            f_point.append(points[1])
 
-        #有効ポイント10以上かつ前回から5秒以上経過していたら挨拶
-        if ((len(v_points) > 10) and ((time.time() - t_st) > 5)):
-#            print('有効ポイント10以上かつ前回から5秒以上経過')
+        #前回から7秒以上経過？
+        if (time.time() - t_st) > 7:
             max_sim = 0
             detect_name = ''
-            #0：頭、1：首を取得できているか
-            if points[0] != None and points[1] != None:
-                print("detect face")
-                #顔周辺の画像を切り出す             
-                cropped_frame = pose_detect.crop_frame(f_point, org_frame)
-#                cropped_frame = org_frame
+            #有効ポイント10以上
+            if ((mode == 0) and (len(v_points) > 10)):
+#                print('有効ポイント10以上かつ前回から7秒以上経過')
+                #挨拶する
+                greeting = True
+                #0：頭、1：首を取得できているか
+                if points[0] != None and points[1] != None:
+                    print("detect face")
+                    cropped_face = True
+                    #顔周辺の画像を切り出す             
+                    cropped_frame = pose_detect.crop_frame(f_point, org_frame)
+
+            #有効ポイント10以下
+            elif ((mode == 0) and (len(v_points) <= 10)):
+                    continue
+
+            if cropped_face == True:
                 #OpenCV→Pill変換
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
@@ -106,6 +123,8 @@ def greeting():
                 #顔が見つかれば認証
                 if (face != None):
 #                    print("顔が見つかれば認証")
+                    #挨拶する
+                    greeting = True
                     #similarity
 #                    max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
                     max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
@@ -123,28 +142,35 @@ def greeting():
                     detect_name = detect_name.split('_')[0]
                     #さん付け
                     detect_name = detect_name + 'さん'
+                    print('you are ', detect_name)
 
-                print('you are ', detect_name)
+            #挨拶する
+            if greeting == True:
+                #認識度レベル変換
+                level = transfer.transfer_percentage(max_sim, 0.7, motion.get_motion_num())
+                if level > len(utterance.op_lst) - 1:
+                    level = len(utterance.op_lst) - 1
 
+                #挨拶音声再生
+#                print('挨拶音声再生')
+                talk.greeting(d, detect_name, utterance.op_lst[level])
 
-            #認識度レベル変換
-            level = transfer.transfer_percentage(max_sim, 0.7, motion.get_motion_num())
-            if level > len(utterance.op_lst) - 1:
-                level = len(utterance.op_lst) - 1
+                #モーションズレ補正
+                time.sleep(0.5)
 
-            #挨拶音声再生
-#            print('挨拶音声再生')
-            talk.greeting(d, detect_name, utterance.op_lst[level])
+                #挨拶モーション再生
+#                print('挨拶モーション再生')
+                motion.set_level_motion(level)
 
-            #モーションズレ補正
-            time.sleep(0.5)
-
-            #挨拶モーション再生
-#            print('挨拶モーション再生')
-            motion.set_level_motion(level)
-
-            t_st = time.time()
-#            print('t_st:', t_st)
+                t_st = time.time()
+#                print('t_st:', t_st)
 
 if __name__ == '__main__':
-    greeting()
+    #args[1] = mode 0:通常/1:ポーズ省略
+    args = sys.argv
+    if 1 <= len(args):
+        print(args[1])
+        greeting(int(args[1]))
+    else:
+        print('Arguments are too short')
+

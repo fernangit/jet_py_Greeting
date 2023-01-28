@@ -51,7 +51,7 @@ def get_motion_num():
     return len(motion_list)
 
 if __name__ == '__main__':
-    #args[1] = dbpath
+    #args[1] = motionNo
     args = sys.argv
     if 1 <= len(args):
         print(args[1])
