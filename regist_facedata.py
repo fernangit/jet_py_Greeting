@@ -32,14 +32,11 @@ def save_faceFeature(dbpath):
     fr.count = check_name(dbpath, name)
     print('count:', fr.count)
 
- #   print('データ登録を開始しますか？　Yes:y')
     key = input('データ登録を開始しますか？　Yes:y：')
     #ビデオ入力開始
     while(True):
         ret, face = img_crop(cap, keywait)
         cv2.waitKey(1)
-        #キー入力が取れないので代用
-#        print('key:', key)
         #ord：文字を10進数で表記されるアスキーコードへ変換する
         if keywait == True and key == 'y':
             print('顔データ登録開始')
@@ -61,27 +58,23 @@ def save_faceFeature(dbpath):
             #データ登録
             if fr.mode == 1 or fr.mode == 2:
                 regist_faceFeature(face, dbpath, name, fr)
-                key = input()
 
             #データチェック
             if fr.mode == 3:
                 check_faceFeature(face, dbpath, name, fr)
-                key = input()
 
             if fr.skip == True or fr.mode == 3:
-#                print('登録終了しますか？　Yes:y No:n')
                 key = input('登録終了しますか？　Yes:y No:n：')
                 if key == 'y':
                     print('登録終了')
                     break
                 else:
-        #名前の入力
+                    #名前の入力
                     name = input('名前_Numberを入力してください：')
                     #名前の重複チェック
                     fr.count = check_name(dbpath, name)
                     print('count:', fr.count)
 
-#                    print('データ登録を開始しますか？ Yes:y')
                     key = input('データ登録を開始しますか？ Yes:y：')
                     fr.mode = 0
                     fr.skip = False
@@ -97,11 +90,13 @@ def regist_faceFeature(face, dbpath, name, fr):
     else:
         return
 
-    regist_skip(fr)
-    print(fr.skip, fr.mode)
+    key = input()
+
+    regist_skip(fr, key)
+#    print(fr.skip, fr.mode)
     if fr.skip == False:
         #データ登録
-        print('データ登録')
+#        print('データ登録')
         regist_dbx3(face, dbpath, name, fr)
     else:
         fr.skip = False
@@ -109,8 +104,8 @@ def regist_faceFeature(face, dbpath, name, fr):
 
 def check_faceFeature(face, dbpath, name, fr):
     #テスト
-    print('顔認証テストをしますか？ Yes:y Skip:s')
-    regist_skip(fr)
+    key = input('顔認証テストをしますか？ Yes:y Skip:s')
+    regist_skip(fr, key)
     detect = ''
     if fr.skip == False:
         maxsim, detect, in_fv = facenet.compare_similarity(face, dbpath)
@@ -124,10 +119,10 @@ def check_name(dbpath, name):
     count = 0
     #dbpathにある同じ名前のファイルを検索
     for file in glob.glob(dbpath + '/' + name + '*.npy'):
-        print(file)
+#        print(file)
         fname = os.path.splitext(os.path.basename(file))[0]
         num = int(fname.split('_')[2])
-        print('num:', num)
+#        print('num:', num)
         #番号の二桁目以上を取得
         num = int(num / 10)
         #番号の最大値を取得
@@ -171,7 +166,6 @@ def img_crop(cap, keywait):
 def regist_dbx3(img_cropped, dbpath, name, fr):
     #データ登録
     regist_db(img_cropped, dbpath, name + '_' + str(fr.count))
-    print('データ登録')
     fr.count = fr.count + 1
     fr.registnum = fr.registnum + 1
     #3枚登録
@@ -187,11 +181,8 @@ def regist_db(img_cropped, dbpath, name):
     vector = dbpath + '/' + name
     np.save(vector, fv.astype('float32'))
 
-def regist_skip(fr):
-    print('Yes:y Skip:s')
-
-    ret = keyinput.keyin()
-    if ret == 's':
+def regist_skip(fr, key):
+    if key == 's':
         #スキップする
         skip = True
     else:
