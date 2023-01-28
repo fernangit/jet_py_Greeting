@@ -134,10 +134,11 @@ def greeting(mode = 0):
 #                    print("認証した")
                     # 登録
                     regist_detected.regist_detected(detect_name)
-                    #今回データで差し替え
-#                    vector = 'facedb' + '/' + detect_name
-                    vector = 'facedb2' + '/' + detect_name
-                    np.save(vector, fv.astype('float32'))
+                    #類似度80%以上で今回データで差し替え
+                    if maxsim > 0.8:
+#                        vector = 'facedb' + '/' + detect_name
+                        vector = 'facedb2' + '/' + detect_name
+                        np.save(vector, fv.astype('float32'))
                     #名前の抽出
                     detect_name = detect_name.split('_')[0]
                     #さん付け
