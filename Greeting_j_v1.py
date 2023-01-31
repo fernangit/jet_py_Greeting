@@ -21,6 +21,11 @@ import motion
 import talk
 import regist_detected
 
+def scale_to_resolation(img, resolation):
+    h, w = img.shape[:2]
+    scale = (resolation / (w * h)) **0.5
+    return cv.resize(img, dsize = None, fx = scale, fy = scale)
+
 def greeting(mode = 0):
     #サーバ起動済み＆WebGL起動済みであること
 
@@ -70,8 +75,19 @@ def greeting(mode = 0):
         if not hasFrame:
             continue
 
+        #サイズ変更
+        scale_to_resolation(frame, 320 * 480)
+
+        if (mode != 0):
+            #debug
+#            cv.namedWindow("Output-Skeleton", cv.WINDOW_NORMAL)
+            resized_frame = cv.resize(frame, ((int)(frame.shape[1]), (int)(frame.shape[0])))
+            cv.imshow('Input', resized_frame)
+            cv.moveWindow('window name', 100, 100)
+
         #元画像を保存
         org_frame = copy.copy(frame)
+
         if (mode == 1):
             #ポーズ省略の場合
             cropped_frame = org_frame
@@ -117,8 +133,8 @@ def greeting(mode = 0):
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
 #                print("顔検出")
-                face = facenet.detect_face(pill, path='out.jpg')
-#                face = facenet.detect_face(pill)
+#                face = facenet.detect_face(pill, path='out.jpg')
+                face = facenet.detect_face(pill)
 #                print(face)
                 #顔が見つかれば認証
                 if (face != None):
@@ -135,7 +151,7 @@ def greeting(mode = 0):
                     # 登録
                     regist_detected.regist_detected(detect_name)
                     #類似度80%以上で今回データで差し替え
-                    if maxsim > 0.8:
+                    if max_sim > 0.8:
 #                        vector = 'facedb' + '/' + detect_name
                         vector = 'facedb2' + '/' + detect_name
                         np.save(vector, fv.astype('float32'))
