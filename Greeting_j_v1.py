@@ -76,7 +76,7 @@ def greeting(mode = 0):
             continue
 
         #サイズ変更
-        scale_to_resolation(frame, 320 * 480)
+        frame = scale_to_resolation(frame, 320 * 240)
 
         if (mode != 0):
             #debug
