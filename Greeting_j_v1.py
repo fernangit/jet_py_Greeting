@@ -20,13 +20,14 @@ import transfer
 import motion
 import talk
 import regist_detected
+import send_server
 
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
     scale = (resolation / (w * h)) **0.5
     return cv.resize(img, dsize = None, fx = scale, fy = scale)
 
-def greeting(mode = 0):
+def greeting(url, mode = 0):
     #サーバ起動済み＆WebGL起動済みであること
 
     #カメラの設定　デバイスIDは0
@@ -170,7 +171,7 @@ def greeting(mode = 0):
 
                 #挨拶音声再生
 #                print('挨拶音声再生')
-                talk.greeting(d, detect_name, utterance.op_lst[level])
+                utter = talk.greeting(d, detect_name, utterance.op_lst[level])
 
                 #モーションズレ補正
                 time.sleep(0.5)
@@ -178,16 +179,23 @@ def greeting(mode = 0):
                 #挨拶モーション再生
 #                print('挨拶モーション再生')
                 motion.set_level_motion(level)
+                
+                #発話内容をサーバーに送信
+                send_server.send_utterance(url, utter)
 
                 t_st = time.time()
 #                print('t_st:', t_st)
 
 if __name__ == '__main__':
-    #args[1] = mode 0:通常/1:ポーズ省略
+    #args[1] = server url ex.localhost:8000
+    #args[2] = mode 0:通常/1:ポーズ省略
     args = sys.argv
-    if 1 <= len(args):
+    if 2 <= len(args):
         print(args[1])
-        greeting(int(args[1]))
+        print(args[2])
+        url = 'http://' + args[1] + '/StreamingAssets/Utterance'
+        print(url)
+        greeting(url, int(args[2]))
     else:
         print('Arguments are too short')
 
