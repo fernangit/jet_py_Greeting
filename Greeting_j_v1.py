@@ -163,7 +163,7 @@ def greeting(url, mode = 0):
                     #名前の抽出
                     detect_name = detect_name.split('_')[0]
                     #さん付け
-                    detect_name = detect_name + 'さん'
+                    detect_name = detect_name + 'さん！'
                     print('you are ', detect_name)
 
             #挨拶する

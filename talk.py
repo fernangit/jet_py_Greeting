@@ -31,15 +31,15 @@ def greeting(now_time, name, op):
     if (now_time.hour > 5) and (now_time.hour < 12):
         #午前
         if rnd > (len(utterance.mng_lst) - 1):
-            utter = utterance.morning + '　' + name + '　' + op
+            utter = name + '　' + utterance.morning + '　' + op
         else:
-            utter = utterance.mng_lst[rnd] + '　' + name + '　' + op
+            utter = name + '　' + utterance.mng_lst[rnd] + '　' + op
     else:
         #午後
         if rnd > (len(utterance.evg_lst) - 1):
-            utter = utterance.evening + '　' + name + '　' + op
+            utter = name + '　' + utterance.evening + '　' + op
         else:
-            utter = utterance.evg_lst[rnd] + '　' + name + '　' + op
+            utter = name + '　' + utterance.evg_lst[rnd] + '　' + op
 
     jtalk.jtalk(utter)
     return utter
