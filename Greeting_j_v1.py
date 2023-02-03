@@ -10,6 +10,8 @@ import cv2 as cv
 from PIL import Image
 import numpy as np
 import pyautogui
+import threading
+
 
 import jtalk
 import utterance
@@ -20,7 +22,8 @@ import transfer
 import motion
 import talk
 import regist_detected
-import send_server
+import send_receive_server
+
 
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
@@ -48,7 +51,6 @@ def greeting(url, mode = 0):
     nxt_m = random.randint(0, 59)
     t_st = time.time()
 
-#    while cv.waitKey(1) < 0:
     while True:
         cv.waitKey(1)
         greeting = False
@@ -56,11 +58,13 @@ def greeting(url, mode = 0):
         #現在時刻読み取り
 #        print('現在時刻読み取り')
         d = datetime.now()
+
         #30分でスリープ
         if (time.time() - t_st) > (60 * 30):
             #Sleepモーション
 #            print('sleep motion')
             motion.set_sleep_motion()
+            t_st = time.time()
 
         #所定時刻の所定モーション呼び出し
 #        print('所定時刻の所定モーション呼び出し')
@@ -181,10 +185,17 @@ def greeting(url, mode = 0):
                 motion.set_level_motion(level)
                 
                 #発話内容をサーバーに送信
-                send_server.send_utterance(url, utter)
+                send_receive_server.send_utterance(url, utter)
+                #発話内容をリセット
+                threading.Thread(target=reset_utterance).start()
 
                 t_st = time.time()
 #                print('t_st:', t_st)
+
+def reset_utterance():
+    time.sleep(7)
+    #発話内容をリセット
+    send_receive_server.send_utterance(url, '')
 
 if __name__ == '__main__':
     #args[1] = server url ex.localhost:8000
