@@ -12,18 +12,13 @@ import numpy as np
 import pyautogui
 import threading
 
-
-import jtalk
-import utterance
 import pose_detect
 import cv2pil
 import facenet
-import transfer
 import motion
 import talk
 import regist_detected
 import send_receive_server
-
 
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
@@ -83,38 +78,36 @@ def greeting(url, mode = 0):
         #サイズ変更
         frame = scale_to_resolation(frame, 320 * 240)
 
-        if (mode != 0):
-            #debug
-#            cv.namedWindow("Output-Skeleton", cv.WINDOW_NORMAL)
-            resized_frame = cv.resize(frame, ((int)(frame.shape[1]), (int)(frame.shape[0])))
-            cv.imshow('Input', resized_frame)
-            cv.moveWindow('window name', 100, 100)
-
-        #元画像を保存
-        org_frame = copy.copy(frame)
-
-        if (mode == 1):
-            #ポーズ省略の場合
-            cropped_frame = org_frame
-            cropped_face = True
-
-        if (mode == 0):
-            #OpenPose呼び出し
-#            print('OpenPose呼び出し')
-            points = pose_detect.getpoints(hasFrame, frame)
-#            print('points=', points)
-            #有効Point取り出し
-            v_points= [p for p in points if p != None]
-#            print('v_points=', v_points)
-#            print('len=', len(v_points))
-            #0：頭、1：首
-            #0：頭、1：首を取得しておく
-            f_point = []
-            f_point.append(points[0])
-            f_point.append(points[1])
-
         #前回から7秒以上経過？
         if (time.time() - t_st) > 7:
+            #元画像を保存
+            org_frame = copy.copy(frame)
+
+            if (mode == 0):
+                #OpenPose呼び出し
+#                print('OpenPose呼び出し')
+                points = pose_detect.getpoints(hasFrame, frame)
+#                print('points=', points)
+                #有効Point取り出し
+                v_points= [p for p in points if p != None]
+#                print('v_points=', v_points)
+#                print('len=', len(v_points))
+                #0：頭、1：首を取得しておく
+                f_point = []
+                f_point.append(points[0])
+                f_point.append(points[1])
+
+            elif (mode == 1):
+                #debug
+#               cv.namedWindow("Output-Skeleton", cv.WINDOW_NORMAL)
+                resized_frame = cv.resize(frame, ((int)(frame.shape[1]), (int)(frame.shape[0])))
+                cv.imshow('Input', resized_frame)
+                cv.moveWindow('window name', 100, 100)
+
+                #ポーズ省略の場合
+                cropped_frame = org_frame
+                cropped_face = True
+
             max_sim = 0
             detect_name = ''
             #有効ポイント10以上
@@ -169,13 +162,13 @@ def greeting(url, mode = 0):
             #挨拶する
             if greeting == True:
                 #認識度レベル変換
-                level = transfer.transfer_percentage(max_sim, 0.7, motion.get_motion_num())
-                if level > len(utterance.op_lst) - 1:
-                    level = len(utterance.op_lst) - 1
+                level = talk.percentage_to_level(max_sim, 0.7, motion.get_motion_num())
+                if level > talk.len_utterance_op_lst() - 1:
+                    level = talk.len_utterance_op_lst() - 1
 
                 #挨拶音声再生
 #                print('挨拶音声再生')
-                utter = talk.greeting(d, detect_name, utterance.op_lst[level])
+                utter = talk.greeting(d, detect_name, talk.level_to_utterance(level))
 
                 #モーションズレ補正
                 time.sleep(0.5)
