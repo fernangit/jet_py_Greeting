@@ -92,41 +92,41 @@ def greeting(url, mode = 0):
                 v_points= [p for p in points if p != None]
 #                print('v_points=', v_points)
 #                print('len=', len(v_points))
-                #0：頭、1：首を取得しておく
-                f_point = []
-                f_point.append(points[0])
-                f_point.append(points[1])
+
+                #有効ポイント10以上
+                if (len(v_points) > 10):
+#                    print('有効ポイント10以上かつ前回から7秒以上経過')
+                    #挨拶する
+                    greeting = True
+                    #0：頭、1：首を取得できているか
+                    if points[0] != None and points[1] != None:
+                        print("detect face")
+                        cropped_face = True
+                        #0：頭、1：首を設定
+                        f_point = []
+                        f_point.append(points[0])
+                        f_point.append(points[1])
+                        #顔周辺の画像を切り出す             
+                        cropped_frame = pose_detect.crop_frame(f_point, org_frame)
+
+                #有効ポイント10以下
+                else:
+                    continue
 
             elif (mode == 1):
                 #debug
-#               cv.namedWindow("Output-Skeleton", cv.WINDOW_NORMAL)
-                resized_frame = cv.resize(frame, ((int)(frame.shape[1]), (int)(frame.shape[0])))
-                cv.imshow('Input', resized_frame)
+#                cv.namedWindow("Output-Skeleton", cv.WINDOW_NORMAL)
+#                resized_frame = cv.resize(frame, ((int)(frame.shape[1]), (int)(frame.shape[0])))
+                cv.imshow('Input', frame)
                 cv.moveWindow('window name', 100, 100)
 
                 #ポーズ省略の場合
                 cropped_frame = org_frame
                 cropped_face = True
 
-            max_sim = 0
-            detect_name = ''
-            #有効ポイント10以上
-            if ((mode == 0) and (len(v_points) > 10)):
-#                print('有効ポイント10以上かつ前回から7秒以上経過')
-                #挨拶する
-                greeting = True
-                #0：頭、1：首を取得できているか
-                if points[0] != None and points[1] != None:
-                    print("detect face")
-                    cropped_face = True
-                    #顔周辺の画像を切り出す             
-                    cropped_frame = pose_detect.crop_frame(f_point, org_frame)
-
-            #有効ポイント10以下
-            elif ((mode == 0) and (len(v_points) <= 10)):
-                    continue
-
             if cropped_face == True:
+                max_sim = 0
+                detect_name = ''
                 #OpenCV→Pill変換
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
