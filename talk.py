@@ -1,3 +1,4 @@
+import sys
 import random
 import time
 import jtalk
@@ -44,6 +45,15 @@ def greeting(now_time, name, op):
     jtalk.jtalk(utter)
     return utter
 
+#発話
+def speak(sentence):
+    #発話再生
+    jtalk.jtalk(sentence)
+    #モーションズレ補正
+    time.sleep(0.5)
+    #口パク
+    transfer.transfer_utterance(sentence)
+
 def percentage_to_level(per, thresh, motion_num):
     return transfer.transfer_percentage(per, thresh, motion_num)
 
@@ -61,4 +71,12 @@ def len_utterance_mono_lst():
 
 def len_utterance_op_lst():
     return len(utterance.op_lst)
+
+if __name__ == '__main__':
+    #args[1] = sentence
+    args = sys.argv
+    if 1 <= len(args):
+        speak(args[1])
+    else:
+        print('Arguments are too short')
 

@@ -1,11 +1,6 @@
 import cv2
 import time
 import numpy as np
-import argparse
-
-parser = argparse.ArgumentParser(description='Run keypoint detection')
-parser.add_argument("--device", default="cpu", help="Device to inference on")
-parser.add_argument("--video_file", default="sample_video.mp4", help="Input Video")
 
 MODE = "MPI"
 

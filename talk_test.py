@@ -10,28 +10,34 @@ motionlist = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'o', 'p', 'q', '
 #ブラウザ起動しておく
 
 jtalk.jtalk('おはようございます')
-transfer.transferUtterance('おはようございます')
-time.sleep(3)
+#モーションズレ補正
+time.sleep(0.5)
+transfer.transfer_utterance('おはようございます')
+time.sleep(1)
 
 jtalk.jtalk('こんにちわ')
-transfer.transferUtterance('こんにちわ')
-time.sleep(3)
+#モーションズレ補正
+time.sleep(0.5)
+transfer.transfer_utterance('こんにちわ')
+time.sleep(1)
 
 jtalk.jtalk('こんばんわ')
-transfer.transferUtterance('こんばんわ')
-time.sleep(3)
+#モーションズレ補正
+time.sleep(0.5)
+transfer.transfer_utterance('こんばんわ')
+time.sleep(1)
 
 jtalk.jtalk('おつかれさまです')
-transfer.transferUtterance('おつかれさまです')
-time.sleep(3)
+#モーションズレ補正
+time.sleep(0.5)
+transfer.transfer_utterance('おつかれさまです')
+time.sleep(1)
 
-jtalk.jtalk('めめたあ')
-transfer.transferUtterance('めめたあ')
-time.sleep(3)
-
-jtalk.jtalk('ひでぶっっ')
-transfer.transferUtterance('ひでぶっっ')
-time.sleep(3)
+jtalk.jtalk('わたしじつわいろいろしゃべれるんです')
+#モーションズレ補正
+time.sleep(0.5)
+transfer.transfer_utterance('わたしじつわいろいろしゃべれるんです')
+time.sleep(1)
 
 while(True):
     #独り言再生
@@ -40,11 +46,7 @@ while(True):
     print(monologue, utterance.mono_lst[monologue])
     #モーションズレ補正
     time.sleep(0.5)
-    if monologue < len(motionlist) :
-        #モーション
-        pyautogui.hotkey(motionlist[monologue])
-    else:
-        #口パク
-        transfer.transferUtterance(utterance.mono_lst[monologue])
+    #口パク
+    transfer.transfer_utterance(utterance.mono_lst[monologue])
 
-    time.sleep(3)
+    time.sleep(1)
