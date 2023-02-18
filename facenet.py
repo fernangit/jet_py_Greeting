@@ -8,6 +8,8 @@ import glob
 import os
 import time
 
+from torch2trt import torch2trt
+
 #### GPUチェック
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 print('Using device:', device)
@@ -22,6 +24,12 @@ start = time.perf_counter()
 resnet = InceptionResnetV1(pretrained='vggface2').to(device).eval()
 #resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
 #resnet = InceptionResnetV1(pretrained='vggface2').eval()
+
+# convert to TensorRT feeding sample data as input
+#x = torch.ones((1, 3, 224, 224)).to(device)
+img_cropped = Image.open('out.jpg')
+x = img_cropped.unsqueeze(0).to(device)
+resnet_trt = torch2trt(resnet, [x])
 print('モデル読み込み', time.perf_counter() - start)
 
 ### 顔切り出し
@@ -62,7 +70,8 @@ def save_feature_vector(inp, outp):
 #### 画像ファイルから画像の特徴ベクトルを取得(ndarray 512次元)
 ### img_croppedはmtcnnで抽出したもの
 def feature_vector(img_cropped):
-    feature_vector = resnet(img_cropped.unsqueeze(0).to(device))
+#    feature_vector = resnet(img_cropped.unsqueeze(0).to(device))
+    feature_vector = resnet_trt(img_cropped.unsqueeze(0).to(device))
 #    feature_vector = resnet(img_cropped.unsqueeze(0))
     feature_vector_np = feature_vector.squeeze().to('cpu').detach().numpy().copy()
     return feature_vector_np
