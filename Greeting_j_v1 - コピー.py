@@ -19,7 +19,6 @@ import motion
 import talk
 import regist_detected
 import send_receive_server
-import get_image_score
 
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
@@ -132,20 +131,17 @@ def greeting(url, mode = 0):
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
 #                print("顔検出")
-                face = facenet.detect_face(pill, path='out.jpg')
-#                face = facenet.detect_face(pill)
+#                face = facenet.detect_face(pill, path='out.jpg')
+                face = facenet.detect_face(pill)
 #                print(face)
                 #顔が見つかれば認証
                 if (face != None):
-                    #ピンぼけでないか
-                    score = get_image_score.score('out.jpg')
-                    if score > 100:
-#                        print("ピンボケでない顔が見つかれば認証")
-                        #挨拶する
-                        greeting = True
-                        #similarity
-#                        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
-                        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+#                    print("顔が見つかれば認証")
+                    #挨拶する
+                    greeting = True
+                    #similarity
+#                    max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
+                    max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
 
                 #認証した？
                 if(detect_name != ''):
