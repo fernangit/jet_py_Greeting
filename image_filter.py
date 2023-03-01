@@ -1,0 +1,65 @@
+#https://hiroki.jp/detect_blur
+import cv2
+import numpy as np
+import sys
+
+#ピンぼけ度合をスコア化
+def get_image_score(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    laplacian =  variance_of_laplacian(gray)
+    print('image_score = ', laplacian)
+    return laplacian
+
+#エッジ検出
+def variance_of_laplacian(image):
+    return cv2.Laplacian(image, cv2.CV_64F).var()
+
+#シャープ化
+def apply_sharp_filter(image):
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)
+#    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]], np.float32)
+    return cv2.filter2D(image, -1, kernel)
+    
+#顔検出
+def detect_faces(image):
+    # 画像のグレースケール化
+    img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # 学習済みモデルの読み込み
+    cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    # 顔を検出する
+    lists = cascade.detectMultiScale(img_gray)
+    print('face lists = ', lists)
+    return lists
+
+#目検出
+def detect_eyes(image):
+    # 画像のグレースケール化
+    img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # 学習済みモデルの読み込み
+    cascade = cv2.CascadeClassifier("haarcascade_eye.xml")
+    # 目を検出する
+    lists = cascade.detectMultiScale(img_gray)
+    print('eye lists = ', lists)
+    return lists
+
+if __name__ == '__main__':
+    #args[1] = image_path
+    args = sys.argv
+    if 2 <= len(args):
+        print(args[1])
+        image = cv2.imread(args[1])
+        get_image_score(image)
+        faces = detect_faces(image)
+        eyes = detect_eyes(image)
+        print('eyes = ', len(eyes))
+        for x, y, w, h in eyes:
+            cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.imwrite('sample_after.png', image)
+        sharp = apply_sharp_filter(image)
+        get_image_score(sharp)
+        cv2.namedWindow('window')
+        cv2.imshow('window', sharp)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        print('Arguments are too short')

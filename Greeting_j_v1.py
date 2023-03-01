@@ -19,7 +19,7 @@ import motion
 import talk
 import regist_detected
 import send_receive_server
-import get_image_score
+import image_filter
 
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
@@ -128,6 +128,16 @@ def greeting(url, mode = 0):
             if cropped_face == True:
                 max_sim = 0
                 detect_name = ''
+                #score 100未満をピンボケ画像として除外
+                score = image_filter.get_image_score(cropped_face)
+                if score < 100:
+                    continue
+                #目が2つ検出できなければ除外
+                eyes = image_filter.detect_eyes(cropped_face)
+                if len(eyes) < 2:
+                    continue
+                #画像シャープ化
+                cropped_frame = image_filter.apply_sharp_filter(cropped_face)
                 #OpenCV→Pill変換
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
@@ -137,15 +147,12 @@ def greeting(url, mode = 0):
 #                print(face)
                 #顔が見つかれば認証
                 if (face != None):
-                    #ピンぼけでないか
-                    score = get_image_score.score('out.jpg')
-                    if score > 100:
-#                        print("ピンボケでない顔が見つかれば認証")
-                        #挨拶する
-                        greeting = True
-                        #similarity
-#                        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
-                        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+#                    print("ピンボケでない顔が見つかれば認証")
+                    #挨拶する
+                    greeting = True
+                    #similarity
+#                    max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
+                    max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
 
                 #認証した？
                 if(detect_name != ''):
