@@ -26,10 +26,10 @@ def set_sleep_motion():
 
 #所定時刻の所定モーション呼び出し
 def set_default_motion(now_time):
-    if now_time.hour == 8 and now_time.minute == 26:
+    if now_time.hour == 8 and now_time.minute == 26 and now_time.second == 20:
         #8:26 ラジオ体操
         pyautogui.hotkey('1')
-    if now_time.hour == 12 and now_time.minute == 0:
+    if now_time.hour == 12 and now_time.minute == 30 and now_time.second == 0:
         #12:00 ダンスの時間
         motion = random.randint(0, len(dance_list) - 1)
         if os.path.isfile(sound_list[1]) == True:
