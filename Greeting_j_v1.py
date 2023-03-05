@@ -142,8 +142,8 @@ def greeting(url, mode = 0):
                 pill = cv2pil.cv2pil(cropped_frame)
                 #顔検出
 #                print("顔検出")
-                face = facenet.detect_face(pill, path='out.jpg')
-#                face = facenet.detect_face(pill)
+#                face = facenet.detect_face(pill, path='out.jpg')
+                face = facenet.detect_face(pill)
 #                print(face)
                 #顔が見つかれば認証
                 if (face != None):
