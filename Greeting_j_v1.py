@@ -38,6 +38,42 @@ def initialize_devices(device_id):
     #OpenPose用デバイス設定
     pose_detect.set_openpose_device('gpu')
 
+#画像サイズ変換
+def scale_to_resolation(img, resolation):
+    h, w = img.shape[:2]
+    scale = (resolation / (w * h)) **0.5
+    
+    return cv.resize(img, dsize = None, fx = scale, fy = scale)
+
+#フレーム補正
+def correct_frame(frame):
+    #画像サイズ変換
+    frame = scale_to_resolation(frame, 320 * 240)
+
+    #画像シャープ化
+    frame = image_filter.apply_sharp_filter(frame)
+    
+    return frame
+
+#フレーム除外
+def exclude_frame(frame):
+    #score 100未満をピンボケ画像として除外
+    score = image_filter.get_image_score(frame)
+    if score < 100:
+        return False
+
+    #目が2つ検出できなければ除外
+    eyes = image_filter.detect_eyes(frame)
+    if len(eyes) < 2:
+        return False
+
+    #画像サイズが所定のサイズより小なら除外（カメラからの距離を推定）
+    height, width = frame.shape[:2]
+    print("height:", height)
+    print("width:", width)
+
+    return True
+
 #起動セリフ＆モーション
 def opening():
     #起動セリフ
@@ -47,10 +83,7 @@ def opening():
     motion.set_first_motion()
 
 #定期的セリフ＆モーション
-def opening(nxt_h, nxt_m, t_st):
-    #現在時刻読み取り
-    d = datetime.now()
-
+def regulary(d, nxt_h, nxt_m, t_st):
     #30分でスリープ
     if (time.time() - t_st) > (60 * 30):
         #Sleepモーション
@@ -65,14 +98,10 @@ def opening(nxt_h, nxt_m, t_st):
 
     return nxt_h, nxt_m, t_st
 
-#画像サイズ変換
-def scale_to_resolation(img, resolation):
-    h, w = img.shape[:2]
-    scale = (resolation / (w * h)) **0.5
-    return cv.resize(img, dsize = None, fx = scale, fy = scale)
-    
 #骨格検出
-def detect_point(hasFrame, frame, greeting, cropped_face):
+def detect_point(hasFrame, frame, greeting):
+    cropped_face = False
+    
     #OpenPose呼び出し
     points = pose_detect.getpoints(hasFrame, frame)
 
@@ -99,7 +128,9 @@ def detect_point(hasFrame, frame, greeting, cropped_face):
     return greeting, cropped_face, cropped_frame
 
 #顔検出
-def detect_face(frame, cropped_face):
+def detect_face(frame):
+    cropped_face = False
+
     #for debug
     cv.imshow('Input', frame)
     cv.moveWindow('window name', 100, 100)
@@ -111,23 +142,14 @@ def detect_face(frame, cropped_face):
     return cropped_frame, cropped_face
     
 #顔認証
-def authenticate_face(cropped_frame):
+def authenticate_face(cropped_frame, greeting):
     max_sim = 0
     detect_name = ''
 
-    #score 100未満をピンボケ画像として除外
-    score = image_filter.get_image_score(cropped_frame)
-    if score < 100:
-        continue
-
-    #目が2つ検出できなければ除外
-    eyes = image_filter.detect_eyes(cropped_frame)
-    if len(eyes) < 2:
-        continue
-
-    #画像シャープ化
-    cropped_frame = image_filter.apply_sharp_filter(cropped_frame)
-
+    #フレーム除外
+    if exclude_frame(cropped_frame) == False:
+        return greeting, max_sim, detect_name
+    
     #OpenCV→Pill変換
     pill = cv2pil.cv2pil(cropped_frame)
 
@@ -158,11 +180,11 @@ def authenticate_face(cropped_frame):
         #さん付け
         detect_name = detect_name + 'さん！'
         print('you are ', detect_name)
-        
+
     return greeting, max_sim, detect_name
 
 #挨拶
-def greeting(url, max_sim):
+def greet(d, url, max_sim, detect_name):
     #認識度レベル変換
     level = talk.percentage_to_level(max_sim, 0.7, motion.get_motion_num())
     if level > talk.len_utterance_op_lst() - 1:
@@ -198,18 +220,20 @@ def greeting_main(url, mode = 0):
     while True:
         cv.waitKey(1)
         greeting = False
-        cropped_face = False
+
+        #現在時刻読み取り
+        d = datetime.now()
 
         #定期的セリフ＆モーション
-        nxt_h, nxt_m, t_st = opening(nxt_h, nxt_m, t_st)
+        nxt_h, nxt_m, t_st = regulary(d, nxt_h, nxt_m, t_st)
 
         #画面キャプチャ
         hasFrame, frame = cap.read()
         if not hasFrame:
             continue
 
-        #画像サイズ変換
-        frame = scale_to_resolation(frame, 320 * 240)
+        #入力フレーム補正
+        frame = correct_frame(frame)
 
         #前回から7秒以上経過？
         if (time.time() - t_st) > 7:
@@ -218,24 +242,19 @@ def greeting_main(url, mode = 0):
 
             if (mode == 0):
                 #骨格検出
-                greeting, cropped_face, cropped_frame = detect_point(hasFrame, frame, greeting, cropped_face)
-                #有効ポイント10以下
-                if greeting == False:
-                    continue
+                greeting, cropped_face, cropped_frame = detect_point(hasFrame, frame, greeting)
 
             elif (mode == 1):
                 #顔検出
-                cropped_frame, cropped_face = detect_face(org_frame, cropped_face)
+                cropped_frame, cropped_face = detect_face(org_frame)
 
             if cropped_face == True:
                 #顔認証
-                greeting, max_sim, detect_name = authenticate_face(cropped_frame)
-                if greeting == False:
-                    continue
+                greeting, max_sim, detect_name = authenticate_face(cropped_frame, greeting)
 
             #挨拶する
             if greeting == True:
-                greeting(url, max_sim)
+                greet(d, url, max_sim, detect_name)
 
                 t_st = time.time()
 
