@@ -26,15 +26,19 @@ def set_sleep_motion():
 
 #所定時刻の所定モーション呼び出し
 def set_default_motion(now_time):
-    if now_time.hour == 8 and now_time.minute == 26 and now_time.second == 20:
+    if now_time.hour == 8 and now_time.minute == 26 and now_time.second == 21:
         #8:26 ラジオ体操
         pyautogui.hotkey('1')
     if now_time.hour == 12 and now_time.minute == 30 and now_time.second == 0:
-        #12:00 ダンスの時間
+        #12:30 昼休み
+        pyautogui.hotkey('b')
+        play.play_sound('昼休み.wav')
+    if now_time.hour == 17 and now_time.minute == 00 and now_time.second == 0:
+        #17:00 ダンスの時間
         motion = random.randint(0, len(dance_list) - 1)
-        if os.path.isfile(sound_list[1]) == True:
+        if os.path.isfile(sound_list[motion]) == True:
             #BGM再生
-            play.play_sound(sound_list[1])
+            play.play_sound(sound_list[motion])
             #モーションズレ補正
             time.sleep(0.5)
         pyautogui.hotkey(dance_list[motion])

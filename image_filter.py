@@ -8,14 +8,14 @@ import time
 def get_image_score(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     laplacian =  variance_of_laplacian(gray)
-    print('image_score = ', laplacian)
+#    print('image_score = ', laplacian)
     return laplacian
 
 #エッジ検出
 def variance_of_laplacian(image):
     start = time.perf_counter()
     edge = cv2.Laplacian(image, cv2.CV_64F).var()
-    print('エッジ検出', time.perf_counter() - start)
+#    print('エッジ検出', time.perf_counter() - start)
     return edge
 
 #シャープ化
@@ -24,7 +24,7 @@ def apply_sharp_filter(image):
     kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)
 #    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]], np.float32)
     sharp = cv2.filter2D(image, -1, kernel)
-    print('シャープ化', time.perf_counter() - start)
+#    print('シャープ化', time.perf_counter() - start)
     return sharp
     
 #顔検出
@@ -36,8 +36,8 @@ def detect_faces(image):
     cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     # 顔を検出する
     lists = cascade.detectMultiScale(img_gray)
-    print('cv 顔検出', time.perf_counter() - start)
-    print('face lists = ', lists)
+#    print('cv 顔検出', time.perf_counter() - start)
+#    print('face lists = ', lists)
     return lists
 
 #目検出
@@ -49,8 +49,8 @@ def detect_eyes(image):
     cascade = cv2.CascadeClassifier("haarcascade_eye.xml")
     # 目を検出する
     lists = cascade.detectMultiScale(img_gray)
-    print('cv 目検出', time.perf_counter() - start)
-    print('eye lists = ', lists)
+#    print('cv 目検出', time.perf_counter() - start)
+#    print('eye lists = ', lists)
     return lists
 
 if __name__ == '__main__':

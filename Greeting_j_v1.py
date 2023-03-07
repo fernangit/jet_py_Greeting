@@ -38,6 +38,8 @@ def initialize_devices(device_id):
     #OpenPose用デバイス設定
     pose_detect.set_openpose_device('gpu')
 
+    return cap
+
 #画像サイズ変換
 def scale_to_resolation(img, resolation):
     h, w = img.shape[:2]
@@ -99,8 +101,9 @@ def regulary(d, nxt_h, nxt_m, t_st):
     return nxt_h, nxt_m, t_st
 
 #骨格検出
-def detect_point(hasFrame, frame, greeting):
+def detect_point(hasFrame, frame, org_frame, greeting):
     cropped_face = False
+    cropped_frame = org_frame
     
     #OpenPose呼び出し
     points = pose_detect.getpoints(hasFrame, frame)
@@ -129,8 +132,6 @@ def detect_point(hasFrame, frame, greeting):
 
 #顔検出
 def detect_face(frame):
-    cropped_face = False
-
     #for debug
     cv.imshow('Input', frame)
     cv.moveWindow('window name', 100, 100)
@@ -147,8 +148,8 @@ def authenticate_face(cropped_frame, greeting):
     detect_name = ''
 
     #フレーム除外
-    if exclude_frame(cropped_frame) == False:
-        return greeting, max_sim, detect_name
+#    if exclude_frame(cropped_frame) == False:
+#        return greeting, max_sim, detect_name
     
     #OpenCV→Pill変換
     pill = cv2pil.cv2pil(cropped_frame)
@@ -212,10 +213,10 @@ def greeting_main(url, mode = 0):
     nxt_h, nxt_m, t_st = initialize_time()
 
     #デバイス初期設定
-    initialize_devices(0)
+    cap = initialize_devices(0)
     
     #起動セリフ＆モーション
-    opening():
+    opening()
     
     while True:
         cv.waitKey(1)
@@ -242,7 +243,7 @@ def greeting_main(url, mode = 0):
 
             if (mode == 0):
                 #骨格検出
-                greeting, cropped_face, cropped_frame = detect_point(hasFrame, frame, greeting)
+                greeting, cropped_face, cropped_frame = detect_point(hasFrame, frame, org_frame, greeting)
 
             elif (mode == 1):
                 #顔検出
