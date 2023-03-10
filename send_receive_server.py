@@ -1,6 +1,6 @@
 import requests
 
-def send_utterance(url, utterance, socre):
+def send_utterance(url, utterance, score):
     print(url)
     print(utterance)
     payload = {'utterance':utterance,'score':score}
