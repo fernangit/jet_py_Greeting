@@ -1,9 +1,9 @@
 import requests
 
-def send_utterance(url, utterance):
+def send_utterance(url, utterance, socre):
     print(url)
     print(utterance)
-    payload = {'utterance':utterance}
+    payload = {'utterance':utterance,'score':score}
     response = requests.post(url, data = payload)
     print(response)
 
