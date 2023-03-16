@@ -53,7 +53,7 @@ def correct_frame(frame):
     frame = scale_to_resolation(frame, 320 * 240)
 
     #画像シャープ化
-    frame = image_filter.apply_sharp_filter(frame)
+#    frame = image_filter.apply_sharp_filter(frame)
     
     return frame
 
@@ -64,6 +64,17 @@ def exclude_frame(frame):
     if score < 100:
         return False
 
+    '''
+    #顔が検出できなければ除外
+    faces = image_filter.detect_faces_dlib(frame)
+    if len(faces) < 1:
+        return False
+
+    #顔が検出できなければ除外
+    faces = image_filter.detect_faces(frame)
+    if len(faces) < 1:
+        return False
+
     #目が2つ検出できなければ除外
     eyes = image_filter.detect_eyes(frame)
     if len(eyes) < 2:
@@ -71,9 +82,9 @@ def exclude_frame(frame):
 
     #画像サイズが所定のサイズより小なら除外（カメラからの距離を推定）
     height, width = frame.shape[:2]
-    print("height:", height)
-    print("width:", width)
-
+#    print("height:", height)
+#    print("width:", width)
+    '''
     return True
 
 #起動セリフ＆モーション
@@ -148,8 +159,8 @@ def authenticate_face(cropped_frame, greeting):
     detect_name = ''
 
     #フレーム除外
-#    if exclude_frame(cropped_frame) == False:
-#        return greeting, max_sim, detect_name
+    if exclude_frame(cropped_frame) == False:
+        return greeting, max_sim, detect_name
     
     #OpenCV→Pill変換
     pill = cv2pil.cv2pil(cropped_frame)

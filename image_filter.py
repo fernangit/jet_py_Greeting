@@ -3,6 +3,11 @@ import cv2
 import numpy as np
 import sys
 import time
+import dlib
+
+#Initialize face detector and shape predictor
+detector = dlib.get_frontal_face_detector()
+landmark_predictor = dlib.shape_predictor('dlib_mdl/shape_predictor_68_face_landmarks.dat')
 
 #ピンぼけ度合をスコア化
 def get_image_score(image):
@@ -51,6 +56,15 @@ def detect_eyes(image):
     lists = cascade.detectMultiScale(img_gray)
 #    print('cv 目検出', time.perf_counter() - start)
 #    print('eye lists = ', lists)
+    return lists
+
+#顔検出 dlib
+def detect_faces_dlib(image):
+    start = time.perf_counter()
+    # 顔を検出する
+    lists = detector(img)
+#    print('dlib 顔検出', time.perf_counter() - start)
+#    print('face lists = ', lists)
     return lists
 
 if __name__ == '__main__':
