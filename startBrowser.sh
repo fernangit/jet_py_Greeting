@@ -1,3 +1,3 @@
-cd /home/jetson/work/webGL_Greeting/WebGL
-python3 /home/jetson/work/webGL_Greeting/WebGL/startBrowser.py
+cd /home/jetson/work/webGL_Greeting1/WebGL
+python3 /home/jetson/work/webGL_Greeting1/WebGL/startBrowser.py
 
