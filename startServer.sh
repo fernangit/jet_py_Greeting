@@ -1,4 +1,5 @@
-rand=$RANDOM
+rand=$(od -vAn -N4 -tu4 < /dev/random)
+echo "$rand"
 if [ $((rand % 100)) -lt 20 ]; then
   echo 'webGL_Greeting2'
   cd /home/jetson/work/webGL_Greeting2/WebGL
