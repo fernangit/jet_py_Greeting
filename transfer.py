@@ -9,33 +9,36 @@ e = 'えけせてねへめれげぜでべぺぇエケセテネヘメレゲゼデ
 o = 'おこそとのほもよろごぞどぽぼぉょオコソトノホモヨロゴゾドボポォョｵｺｿﾄﾉﾎﾓﾖﾛｺﾞｿﾞﾄﾞﾎﾞﾎﾟｫｮ'
 n = 'んンﾝ'
 
+talkend = True
+
 def transfer_utterance(utterance):
     list(utterance)
     butt = ''
+    talkend = False
     for num in range(len(utterance)):
         utt = utterance[num]
         if utt in a:
-            print('あ')
+#            print('あ')
             pyautogui.hotkey('a')
             time.sleep(0.02)
         elif utt in i:
-            print('い')
+#            print('い')
             pyautogui.hotkey('i')
             time.sleep(0.02)
         elif utt in u:
-            print('う')
+#            print('う')
             pyautogui.hotkey('u')
             time.sleep(0.02)
         elif utt in e:
-            print('え')
+#            print('え')
             pyautogui.hotkey('e')
             time.sleep(0.02)
         elif utt in o:
-            print('お')
+#            print('お')
             pyautogui.hotkey('o')
             time.sleep(0.02)
         elif utt in n:
-            print('ん')
+#            print('ん')
             pyautogui.hotkey('n')
             time.sleep(0.02)
         else:
@@ -44,6 +47,10 @@ def transfer_utterance(utterance):
             utt = butt
             time.sleep(0.02)
         butt = utt
+    talkend = True
+
+def is_talkend():
+    return talkend
 
 def transfer_percentage(per, thresh, motion_num):
     #小数点以下は切り捨て

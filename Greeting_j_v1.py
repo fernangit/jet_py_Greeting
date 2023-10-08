@@ -171,11 +171,15 @@ def authenticate_face(cropped_frame, greeting):
 
     #顔が見つかれば認証
     if (face != None):
-        #挨拶する
-        greeting = True
-        #similarity
-#        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
-        max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+        #正面顔チェック
+        front_face = facenet.frontal_face(pill)
+
+        if (front_face != False):
+            #挨拶する
+            greeting = True
+            #similarity
+#            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
+            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
 
     #認証した？
     if(detect_name != ''):
@@ -238,6 +242,9 @@ def greeting_main(url, mode = 0):
 
         #定期的セリフ＆モーション
         nxt_h, nxt_m, t_st = regulary(d, nxt_h, nxt_m, t_st)
+
+        #読み上げ
+        talk.read_sentence()
 
         #画面キャプチャ
         hasFrame, frame = cap.read()

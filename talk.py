@@ -4,6 +4,9 @@ import time
 import jtalk
 import utterance
 import transfer
+import threading
+import glob
+import os
 
 #起動時
 def opening():
@@ -45,6 +48,32 @@ def greeting(now_time, name, op):
     jtalk.jtalk(utter)
     return utter
 
+#読み上げ
+def read_sentence():
+#    print("read_sentence")
+    thread = threading.Thread(target = read_sentence_thread)
+    thread.start()
+
+def read_sentence_thread():
+    #sentenceフォルダ読み込み
+    sentence_files = glob.glob('sentences/*.txt')
+    while(True):
+        for sentence in sentence_files:
+            #ファイル有無チェック
+            if os.path.isfile(sentence):
+                with open(sentence) as f:
+                    text = f.read()
+                    print(text)
+                    speak(text)
+                #読み上げ終了待ち
+                while(True):
+                    if transfer.is_talkend():
+                        break
+                    time.sleep(1)
+            time.sleep(1)
+        time.sleep(1)
+
+
 #発話
 def speak(sentence):
     #発話再生
@@ -73,10 +102,11 @@ def len_utterance_op_lst():
     return len(utterance.op_lst)
 
 if __name__ == '__main__':
-    #args[1] = sentence
-    args = sys.argv
-    if 1 <= len(args):
-        speak(args[1])
-    else:
-        print('Arguments are too short')
+#    #args[1] = sentence
+#    args = sys.argv
+#    if 1 <= len(args):
+#        speak(args[1])
+#    else:
+#        print('Arguments are too short')
+    read_sentence()
 

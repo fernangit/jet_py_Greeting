@@ -7,7 +7,15 @@ import numpy as np
 import glob
 import os
 import time
+import math
 #from torch2trt import torch2trt
+
+LEFT_EYE = 0
+RIGHT_EYE = 1
+NOSE = 2
+MOUTH_LEFT = 3
+MOUTH_RIGHT = 4
+
 #### GPUチェック
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 print('Using device:', device)
@@ -38,6 +46,46 @@ print('モデル読み込み', time.perf_counter() - start)
 #    batch_boxes, batch_probs, batch_points = mtcnn.select_boxes(batch_boxes, batch_probs, batch_points, img, method=mtcnn.selection_method)
 #    faces = mtcnn.extract(img, batch_boxes, None)
 #    return faces, batch_boxes, batch_probs, batch_points
+
+def detect_face_features(frame):
+    #顔の特徴点を取得
+    boxes, probs, landmarks = mtcnn.detect(frame, landmarks=True)
+#    print(landmarks)
+
+    keypoints = landmarks[0]
+    left_eye = keypoints[LEFT_EYE]
+    right_eye = keypoints[RIGHT_EYE]
+    nose = keypoints[NOSE]
+    mouth_left = keypoints[MOUTH_LEFT]
+    mouth_right = keypoints[MOUTH_RIGHT]
+
+    return left_eye, right_eye, nose, mouth_left, mouth_right
+
+def frontal_face(frame):
+    #顔の特徴点を取得
+    left_eye, right_eye, nose, mouth_left, mouth_right = detect_face_features(frame)
+
+    #顔の向きを判定
+    is_frontal = True
+
+    #目の位置関係をチェック
+    left_eye_nose = math.sqrt(((left_eye[0] - nose[0])**2) + ((left_eye[1] - nose[0])**2))
+    right_eye_nose = math.sqrt(((right_eye[0] - nose[0])**2) + ((right_eye[1] - nose[0])**2))
+    print('distance ratio LReyes-nose:', (left_eye_nose / right_eye_nose))
+    if (left_eye_nose / right_eye_nose > 1.05) or (left_eye_nose / right_eye_nose < 0.95):
+        is_frontal = False
+
+    #口の位置関係をチェック
+    mouth_left_nose = math.sqrt(((mouth_left[0] - nose[0])**2) + ((mouth_left[1] - nose[0])**2))
+    mouth_right_nose = math.sqrt(((mouth_right[0] - nose[0])**2) + ((mouth_right[1] - nose[0])**2))
+    print('distance ratio mouthLR-nose:', (mouth_left_nose / mouth_right_nose))
+    if (mouth_left_nose / mouth_right_nose > 1.05) or (mouth_left_nose / mouth_right_nose < 0.95):
+        is_frontal = False
+
+    if is_frontal == True:
+        print('frontal face')
+    
+    return is_frontal
 
 ### 顔検出
 def detect_face(img, path=''):
