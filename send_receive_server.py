@@ -9,12 +9,12 @@ def send_utterance(url, utterance, score):
 
 def receive_utterance(url):
     print(url)
-#    utterance = requests.get(url).content.decode('cp932')
-    utterance = requests.get(url).content.decode('utf_8')
+    utterance = requests.get(url).content.decode('cp932')
+#    utterance = requests.get(url).content.decode('utf_8')
     print(utterance)
     return utterance
 
 if __name__ == '__main__':
-    send_utterance('http://localhost:8000/StreamingAssets/Utterance', 'テスト')
+    send_utterance('http://localhost:8000/StreamingAssets/Utterance', 'テスト', 0)
     utterance = receive_utterance('http://localhost:8000/StreamingAssets/Utterance/utter.txt')
     print(utterance)
