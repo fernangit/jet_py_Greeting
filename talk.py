@@ -70,8 +70,8 @@ def read_sentence_thread():
                     if transfer.is_talkend():
                         break
                     time.sleep(1)
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(5)
+        time.sleep(10)
 
 
 #発話

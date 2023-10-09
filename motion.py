@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 import time
@@ -8,13 +9,13 @@ import play
 motion_list = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', '4']
 #注：dance_listとsound_listの配列番号は対応させること
 dance_list = ['2', '3', '5', '6', '7', '8', '9']
-sound_list = ['./source/Gimme×Gimme.wav',
-              './source/いーあるふぁんくらぶ.wav',
-              './source/ジャンキーナイトタウンオーケストラ.wav',
-              './source/アカリがやってきたぞっ.wav',
-              './source/KING.wav',
-              './source/CH4NGE.wav',
-              './source/ロキ.wav']
+sound_list = ['./source/sound2.wav',
+              './source/sound3.wav',
+              './source/sound5.wav',
+              './source/sound6.wav',
+              './source/sound7.wav',
+              './source/sound8.wav',
+              './source/sound9.wav']
 
 #起動時モーション
 def set_first_motion():
