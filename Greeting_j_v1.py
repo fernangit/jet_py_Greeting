@@ -144,8 +144,8 @@ def detect_point(hasFrame, frame, org_frame, greeting):
 #顔検出
 def detect_face(frame):
     #for debug
-    cv.imshow('Input', frame)
-    cv.moveWindow('window name', 100, 100)
+#    cv.imshow('Input', frame)
+#    cv.moveWindow('window name', 100, 100)
 
     #ポーズ省略の場合
     cropped_frame = frame
