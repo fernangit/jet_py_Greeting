@@ -15,6 +15,7 @@ import threading
 import pose_detect
 import cv2pil
 import facenet
+import facecv
 import motion
 import talk
 import regist_detected
@@ -167,12 +168,14 @@ def authenticate_face(cropped_frame, greeting):
 
     #顔検出
 #    face = facenet.detect_face(pill, path='out.jpg')
-    face = facenet.detect_face(pill)
+#    face = facenet.detect_face(pill)
+    face = facecv.detect_face(cropped_frame)
 
     #顔が見つかれば認証
     if (face != None):
         #正面顔チェック
-        front_face = facenet.frontal_face(pill)
+#        front_face = facenet.frontal_face(pill)
+        front_face = facecv.frontal_face(pill)
 
         if (front_face != False):
             #挨拶する
