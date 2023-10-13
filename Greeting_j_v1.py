@@ -170,25 +170,25 @@ def authenticate_face(cropped_frame, greeting):
 
     #顔検出
 #    face = facenet.detect_face(pill, path='out.jpg')
-#    face = facenet.detect_face(pill)
-    faces, face_frame = facecv.detect_face(cropped_frame)
+    face = facenet.detect_face(pill)
+#    faces, face_frame = facecv.detect_face(cropped_frame) #for facecv
 
     #顔が見つかれば認証
-#    if (face != None):
-    if (len(faces) != 0): #for facecv
-        face = cv2pil.cv2pil(face_frame) #for facecv
+    if (face != None):
+#    if (len(faces) != 0): #for facecv
+#        face = cv2pil.cv2pil(face_frame) #for facecv
         #正面顔チェック
-#        front_face = facenet.frontal_face(pill)
-        front_face = facecv.frontal_face(face_frame)
+        front_face = facenet.frontal_face(pill)
+#        front_face = facecv.frontal_face(face_frame) #for facecv
         
         if (front_face != False):
             #挨拶する
             greeting = True
             #similarity
 #            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
-#            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
-            face = F.to_tensor(np.float32(face))
-            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') #for facecv
+            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+#            face = F.to_tensor(np.float32(face)) #for facecv
+#            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') #for facecv
 
     if(detect_name != ''):
         # 登録

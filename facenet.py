@@ -8,6 +8,7 @@ import glob
 import os
 import time
 import math
+import gc
 #from torch2trt import torch2trt
 
 LEFT_EYE = 0
@@ -23,9 +24,12 @@ print('Using device:', device)
 #### MTCNN ResNet のモデル読み込み
 start = time.perf_counter()
 #顔を検出して切り取る GPU使用
-#mtcnn = MTCNN(device=device, margin=10)
+gc.collect() #苦し紛れのメモリ解放
+time.sleep(5)
+mtcnn = MTCNN(device=device, margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
+gc.collect() #苦し紛れのメモリ解放
 time.sleep(5)
 start = time.perf_counter()
 resnet = InceptionResnetV1(pretrained='vggface2').to(device).eval()
@@ -39,6 +43,8 @@ x = img_cropped.unsqueeze(0).to(device)
 resnet_trt = torch2trt(resnet, [x])
 '''
 print('モデル読み込み', time.perf_counter() - start)
+gc.collect() #苦し紛れのメモリ解放
+time.sleep(5)
 
 ### 顔切り出し
 ### imgはpill形式

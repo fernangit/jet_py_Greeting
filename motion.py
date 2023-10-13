@@ -17,6 +17,9 @@ sound_list = ['./source/sound2.wav',
               './source/sound8.wav',
               './source/sound9.wav']
 
+#緊急停止OFF
+pyautogui.FAILSAFE = False
+
 #起動時モーション
 def set_first_motion():
     pyautogui.hotkey('b')
