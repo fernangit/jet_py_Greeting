@@ -93,3 +93,15 @@ sudo jetson_clocks
 キャッシュ破棄
 sudo sysctl -w vm.drop_caches=3
 
+opencv カスケード
+opencvの場所の確認
+import cv2
+print(cv2)
+
+<module 'cv2' from '/home/jetson/.local/lib/python3.6/site-packages/cv2/__init__.py'>
+
+→python3.6/site-packages/cv2/dataのなかにカスケードファイルが入っている
+
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+

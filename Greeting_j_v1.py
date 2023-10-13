@@ -16,6 +16,8 @@ import pose_detect
 import cv2pil
 import facenet
 import facecv
+import torch
+from torchvision.transforms import functional as F
 import motion
 import talk
 import regist_detected
@@ -145,8 +147,8 @@ def detect_point(hasFrame, frame, org_frame, greeting):
 #顔検出
 def detect_face(frame):
     #for debug
-#    cv.imshow('Input', frame)
-#    cv.moveWindow('window name', 100, 100)
+    cv.imshow('Input', frame)
+    cv.moveWindow('window name', 100, 100)
 
     #ポーズ省略の場合
     cropped_frame = frame
@@ -169,22 +171,25 @@ def authenticate_face(cropped_frame, greeting):
     #顔検出
 #    face = facenet.detect_face(pill, path='out.jpg')
 #    face = facenet.detect_face(pill)
-    face = facecv.detect_face(cropped_frame)
+    faces, face_frame = facecv.detect_face(cropped_frame)
 
     #顔が見つかれば認証
-    if (face != None):
+#    if (face != None):
+    if (len(faces) != 0): #for facecv
+        face = cv2pil.cv2pil(face_frame) #for facecv
         #正面顔チェック
 #        front_face = facenet.frontal_face(pill)
-        front_face = facecv.frontal_face(pill)
-
+        front_face = facecv.frontal_face(face_frame)
+        
         if (front_face != False):
             #挨拶する
             greeting = True
             #similarity
 #            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb') 
-            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+#            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') 
+            face = F.to_tensor(np.float32(face))
+            max_sim, detect_name, fv = facenet.compare_similarity(face, 'facedb2') #for facecv
 
-    #認証した？
     if(detect_name != ''):
         # 登録
         regist_detected.regist_detected(detect_name)
@@ -247,7 +252,7 @@ def greeting_main(url, mode = 0):
         nxt_h, nxt_m, t_st = regulary(d, nxt_h, nxt_m, t_st)
 
         #読み上げ
-        talk.read_sentence()
+#        talk.read_sentence()
 
         #画面キャプチャ
         hasFrame, frame = cap.read()

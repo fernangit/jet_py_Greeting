@@ -23,7 +23,7 @@ print('Using device:', device)
 #### MTCNN ResNet のモデル読み込み
 start = time.perf_counter()
 #顔を検出して切り取る GPU使用
-mtcnn = MTCNN(device=device, margin=10)
+#mtcnn = MTCNN(device=device, margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
 time.sleep(5)

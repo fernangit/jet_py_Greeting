@@ -28,7 +28,7 @@ def detect_face(img, path=''):
 
     # 検出されなかった
     if len(faces) == 0:
-        return None
+        return faces, None
     
     # 目の位置を検出することによる傾き補正
     if len(eyes) == 2: # 目を合計３個以上誤検出した場合はスキップ
@@ -82,7 +82,7 @@ def detect_face(img, path=''):
     if path != "":
         cv2.imwrite(path, face_crop)
 
-    return face_crop
+    return faces, face_crop
 
 def detect_face_main():
     cap = cv2.VideoCapture(0)
