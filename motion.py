@@ -66,9 +66,12 @@ if __name__ == '__main__':
         time.sleep(1)
         if os.path.isfile(sound_list[int(args[1])]) == True:
             play.play_sound(sound_list[int(args[1])])
+            print('sound:', sound_list[int(args[1])])
             #モーションズレ補正
             time.sleep(0.5)
         pyautogui.hotkey(dance_list[int(args[1])])
+        print('key:', dance_list[int(args[1])])
+        time.sleep(1)
     else:
         print('Arguments are too short')
 

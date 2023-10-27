@@ -22,15 +22,22 @@ device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('
 print('Using device:', device)
 
 #### MTCNN ResNet のモデル読み込み
-start = time.perf_counter()
-#顔を検出して切り取る GPU使用
-gc.collect() #苦し紛れのメモリ解放
+#苦し紛れのメモリ解放
+torch.cuda.empty_cache()
+gc.collect()
 time.sleep(5)
+
+#顔を検出して切り取る GPU使用
+start = time.perf_counter()
 mtcnn = MTCNN(device=device, margin=10)
 #mtcnn = MTCNN()
 print('MTCNN読み込み', time.perf_counter() - start)
-gc.collect() #苦し紛れのメモリ解放
+
+#苦し紛れのメモリ解放
+torch.cuda.empty_cache()
+gc.collect()
 time.sleep(5)
+
 start = time.perf_counter()
 resnet = InceptionResnetV1(pretrained='vggface2').to(device).eval()
 #resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
@@ -43,8 +50,21 @@ x = img_cropped.unsqueeze(0).to(device)
 resnet_trt = torch2trt(resnet, [x])
 '''
 print('モデル読み込み', time.perf_counter() - start)
-gc.collect() #苦し紛れのメモリ解放
+
+#苦し紛れのメモリ解放
+torch.cuda.empty_cache()
+gc.collect()
 time.sleep(5)
+
+#特徴量展開
+embeddings = []
+names = []
+npy_files = glob.glob('facedb2' + '/' + '*.npy')
+for npy in npy_files:
+    face = np.load(npy)
+    embeddings.append(face)
+    basename = os.path.splitext(os.path.basename(npy))[0]
+    names.append(basename)
 
 ### 顔切り出し
 ### imgはpill形式
@@ -157,22 +177,34 @@ def compare_similarity(img_cropped, path):
     maxsim = 0.0
     detect = ''
     # フォルダ内のファイルを検索
-    start = time.perf_counter()
-    npy_files = glob.glob(path + '/' + '*.npy')
-    print('glob作成', time.perf_counter() - start)
-    start = time.perf_counter()
-    for npy in npy_files:
-        # ファイル名取得
-        basename = os.path.splitext(os.path.basename(npy))[0]
+#    start = time.perf_counter()
+#    npy_files = glob.glob(path + '/' + '*.npy')
+#    print('glob作成', time.perf_counter() - start)
+#    start = time.perf_counter()
+#    for npy in npy_files:
+#        # ファイル名取得
+#        basename = os.path.splitext(os.path.basename(npy))[0]
 #        print(basename)
-        # 比較numpyデータ取得
-        cp_fv = np.load(npy)
+#        # 比較numpyデータ取得
+#        cp_fv = np.load(npy)
+#        # 類似度を計算
+#        sim = cosine_similarity(in_fv, cp_fv)
+##        print(sim)
+#        if sim > maxsim:
+#            maxsim = sim
+#            detect = basename
+#    print('フォルダ内のファイルを検索', time.perf_counter() - start)
+
+    start = time.perf_counter()
+    max_index = -1
+    for i, cp_fv in enumerate(embeddings):
         # 類似度を計算
         sim = cosine_similarity(in_fv, cp_fv)
-#        print(sim)
         if sim > maxsim:
             maxsim = sim
-            detect = basename
+            maxindex = i
+            detect = names[maxindex]
+
     print('フォルダ内のファイルを検索', time.perf_counter() - start)
 
     #類似度が所定値以下なら認証不可

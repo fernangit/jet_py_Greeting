@@ -23,6 +23,7 @@ import talk
 import regist_detected
 import send_receive_server
 import image_filter
+import gc
 
 #時刻初期化
 def initialize_time():
@@ -35,11 +36,12 @@ def initialize_time():
     return nxt_h, nxt_m, t_st
 
 #デバイス初期設定
-def initialize_devices(device_id):
+def initialize_devices(device_id, mode):
     #カメラの設定　デバイスIDは0
     cap = cv.VideoCapture(device_id)
-    #OpenPose用デバイス設定
-    pose_detect.set_openpose_device('gpu')
+    if mode == 0:
+        #OpenPose用デバイス設定
+        pose_detect.set_openpose_device('gpu', net)
 
     return cap
 
@@ -236,12 +238,16 @@ def greeting_main(url, mode = 0):
     nxt_h, nxt_m, t_st = initialize_time()
 
     #デバイス初期設定
-    cap = initialize_devices(0)
+    cap = initialize_devices(0, mode)
     
     #起動セリフ＆モーション
     opening()
     
     while True:
+#        #苦し紛れのメモリ解放
+#        torch.cuda.empty_cache()
+#        gc.collect()
+
         cv.waitKey(1)
         greeting = False
 
