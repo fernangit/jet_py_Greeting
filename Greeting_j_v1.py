@@ -226,7 +226,7 @@ def greet(d, url, max_sim, detect_name):
     motion.set_level_motion(level)
     
     #発話内容をサーバーに送信
-    send_receive_server.send_utterance(url, utter, str(max_sim))
+    send_receive_server.send_utterance(url, utter, str(max_sim), '', '')
 
     #発話内容をリセット
     threading.Thread(target=reset_utterance).start()
@@ -294,7 +294,7 @@ def greeting_main(url, mode = 0):
 #発話内容をリセット
 def reset_utterance():
     time.sleep(7)
-    send_receive_server.send_utterance(url, '', '0')
+    send_receive_server.send_utterance(url, '', '0', '', '')
 
 if __name__ == '__main__':
     #args[1] = server url ex.localhost:8000
