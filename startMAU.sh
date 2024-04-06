@@ -16,4 +16,6 @@ xdotool windowactivate $browser_window_id
 sleep 10
 #Unityを最大表示
 xdotool key z
-
+sleep 10
+# 左クリック
+xdotool click 1
