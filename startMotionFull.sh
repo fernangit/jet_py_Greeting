@@ -1,3 +1,11 @@
+#サーバ起動
+cd /home/jetson/work
+gnome-terminal -- sh startServer.sh
+sleep 10
+#ブラウザ起動
+cd /home/jetson/work
+gnome-terminal -- sh startBrowser.sh
+sleep 30
 #ブラウザを最前面に移動
 browser_window_id=$(xdotool search --name --onlyvisible "chromium")
 xdotool windowactivate $browser_window_id
